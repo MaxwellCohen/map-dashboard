@@ -1,59 +1,61 @@
-
-import {getData} from '../api/googleSheetsApi';
+import { getCSV } from '../api/googleSheetsApi';
 
 export const REQUEST_DATA = 'REQUEST_DATA';
 export const LOAD_DATA = 'LOAD_DATA';
-export const APPLY_FILTERS ='APPLY_FILTERS';
+export const APPLY_FILTERS = 'APPLY_FILTERS';
+export const SET_STATE_AND_GROUP = 'SET_STATE_AND_GROUP';
+export const SET_DISPLAY_FN = 'SET_DISPLAY_FN';
 
-export const loadData = () => async(dispatch) => {
-  dispatch({type:REQUEST_DATA})
-  console.log('loading data')
-  const {data: apiData} = await getData();
-  const alldata = prepDataData(convertCSVToJSON(apiData))
+export const loadData = (url) => async (dispatch) => {
+  dispatch({ type: REQUEST_DATA });
+  console.log('loading data');
+  const { data: apiData } = await getCSV(url);
+  const [titles, rawData] = convertCSVToJSON(apiData);
   dispatch({
     type: LOAD_DATA,
     payload: {
-      data: alldata,
-    }
-  })
-}
+      titles: titles,
+      rawData: rawData,
+    },
+  });
+};
 
 
-export const applyfilters = (data, filters) => {
-  const filteredData = filters.reduce((acc, fn) => {
-    return fn(acc);
-  }, data)
-  console.log(filteredData)
+export const setDisplayFn = (displayValue, fn) => {
   return {
-    type: APPLY_FILTERS,
+    type: SET_DISPLAY_FN,
     payload: {
-      filteredData
+      displayValue,
+      displayFunction: fn,
     }
   }
 }
 
 
+export const groupData = (stateKey) => {
+  return {
+    type: SET_STATE_AND_GROUP,
+    payload: {
+      stateKey,
+    },
+  };
+};
 
-export const convertCSVToJSON  = (str, delimiter = ',') => {
+
+
+export const convertCSVToJSON = (str, delimiter = ',') => {
   const titles = str.slice(0, str.indexOf('\n')).split(delimiter);
   const rows = str.slice(str.indexOf('\n') + 1).split('\n');
-  return rows.map(row => {
+  return [
+    titles,
+    rows.map((row) => {
       const values = row.split(delimiter);
-      return titles.reduce((object, curr, i) => (object[curr] = values[i], object), {})
-  });
+      return titles.reduce(
+        (object, curr, i) => ((object[curr] = values[i]), object),
+        {},
+      );
+    }),
+  ];
 };
 
-const prepDataData = (data)=> {
-  const obj = data.reduce((acc, item) => {
-    if( !item.region) {
-      return acc
-    }
-    const key = 'us-' + item.region.toLowerCase();
-    if(!acc[key]) {
-      acc[key] = [key, []]
-    }
-    acc[key][1].push(item)
-    return acc;
-  }, {})
-  return Object.values(obj)
-};
+

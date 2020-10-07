@@ -15,6 +15,9 @@ if (typeof window !== "undefined") {
 const makeOptions = (data) => ({
   chart: {
     map: mapData,
+  },          
+  title: {
+    text: ''
   },
   credits: {
     enabled: false,
@@ -42,7 +45,7 @@ const makeOptions = (data) => ({
     },
     {
       name: 'Mean',
-      data: data,
+      data: [...data],
       dataLabels: {
           enabled: true,
           format: '{point.name}'
@@ -57,6 +60,7 @@ const Chart = ({ data }) => {
   useEffect(()=> {
     if(data.length !== 0) {
       setOptions(makeOptions(data))
+      console.log(data)
     }
   }, [data])
 
