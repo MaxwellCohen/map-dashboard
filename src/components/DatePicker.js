@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -18,8 +19,9 @@ export default function DatePickers(props) {
   const classes = useStyles();
 
   return (
-    <form className={classes.container} noValidate>
+    <div >
       <TextField
+        labelId={'date-picker-' +props.label }
         type="date"
         className={classes.textField}
         InputLabelProps={{
@@ -27,6 +29,6 @@ export default function DatePickers(props) {
         }}
         {...props}
       />
-    </form>
+    </div>
   );
 }

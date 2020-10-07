@@ -1,10 +1,11 @@
 import * as Actions from './csvData.actions';
+import stateMap from '../constants/stateMap';
 const inital_state = {
   titles: [],
   rawData: [],
   stateKey: '',
   groupData: [],
-  displayValue: '',
+  displayField: '',
   filteringFuncitons: [],
   displayFunction: null,
   mapData: [],
@@ -19,11 +20,17 @@ export default (state = inital_state, action) => {
       loading: true
     };
     case Actions.LOAD_DATA:
+    const  titles = action?.payload?.titles || [];
+    const rawData = action?.payload?.rawData || [];
+    const stateKey = titles.filter((t) => normalizeState((rawData[0] || {})[t]) )[0] || '';
+
       return {
         ...inital_state,
-        rawData:action.payload.rawData,
-        titles:action.payload.titles,
+        rawData,
+        titles,
+        stateKey,
         data: action.payload.data,
+        groupData: groupData(stateKey, rawData),
       };
     case Actions.SET_STATE_AND_GROUP: 
     return {
@@ -34,11 +41,18 @@ export default (state = inital_state, action) => {
     case Actions.SET_DISPLAY_FN: 
     return {
       ...state,
-      displayValue: action.payload.displayValue,
+      displayField: action.payload.displayField,
       displayFunction: action.payload.displayFunction,
-      mapData: applyfilters(state.groupData, [...state.filteringFuncitons, action.payload.displayFunction])
+      mapData: applyfilters(state.groupData,state.filteringFuncitons, action.payload.displayFunction)
     }
-
+    case Actions.ADD_FILTER_FN:
+    const existingFilters = state.filteringFuncitons.filter(({name})=> name !== action.payload.name);
+    const filteringFuncitons = [...existingFilters, action.payload];
+    return {
+      ...state,
+      filteringFuncitons,
+      mapData: applyfilters(state.groupData, filteringFuncitons, state.displayFunction)
+    }
     case Actions.APPLY_FILTERS: 
     return {
       ...state,
@@ -59,6 +73,9 @@ const groupData = (stateKey, data) => {
       return acc;
     }
     const key = normalizeState(item[stateKey]);
+    if(!key) {
+      return acc;
+    }
     if (!acc[key]) {
       acc[key] = [key, []];
     }
@@ -69,14 +86,28 @@ const groupData = (stateKey, data) => {
 };
 
 const normalizeState = (state) => {
-  return 'us-' + state.toLowerCase()
+  if(typeof state !== 'string') {
+    return null;
+  }
+  const cleanState = stateMap[state.toLowerCase().replace(/[^a-z]/gmi,'')];
+  if(cleanState) {
+    return 'us-' + cleanState;
+  }
+  return null;
 }
 
 
-export const applyfilters = (data, filters) => {
-  const mapData = filters.reduce((acc, fn) => {
-    return fn(acc);
-  }, data);
-  console.log(mapData);
-  return mapData
+export const applyfilters = (data, filters, displayFn) => {
+  return data.map(([key, arr]) => {
+    let filterArr = arr;
+    if(filters.length !== 0) {
+      filterArr = arr.filter((value) => {
+        const results = filters.map(({fn}) => fn(value)).filter(Boolean);
+        return results.length === filters.length;
+      } )
+    }
+    const displayVal = displayFn(filterArr);
+    return [key, displayVal, filterArr]
+  } )
+
 };

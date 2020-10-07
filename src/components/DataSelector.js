@@ -4,16 +4,18 @@ import DropDown from './DropDown';
 import * as Actions from '../store/csvData.actions';
 
 
-const averageData = (key, data) => {
-  let average = (array) =>
-    array.reduce((a, b) => a + +b[key], 0) / array.length;
-  return data.map((d) => {
-    return [d[0], average(d[1]).toFixed(2), d[1]];
-  });
+const averageData = (key, arr) => {
+  let average = (array) =>{
+    if( array.length > 0) {
+      return array.reduce((a, b) => a + b, 0) / array.length;
+    }
+  }
+    const cleanArr = arr.map((a) => parseFloat(a[key])).filter((a) => !isNaN(a))
+    return average(cleanArr).toFixed(2)
 };
 
 const DataSelector = () => {
-  const { titles, stateKey, displayValue } = useSelector(
+  const { titles, stateKey, displayField } = useSelector(
     ({ data }) => data,
   );
   const dispatch = useDispatch();
@@ -21,7 +23,7 @@ const DataSelector = () => {
   const onStateChange = (v) => {
     dispatch(Actions.groupData(v));
   };
-  const onDisplayValueChange = (v) => {
+  const onDisplayFieldChange = (v) => {
     const averge = averageData.bind(null, v);
     dispatch(Actions.setDisplayFn(v, averge));
   };
@@ -48,10 +50,10 @@ const DataSelector = () => {
         <div style={{ width: '45%' }}>
           <DropDown
             style={{ width: '45%' }}
-            value={displayValue}
+            value={displayField}
             values={titles}
-            onChange={onDisplayValueChange}
-            label='Display Value'
+            onChange={onDisplayFieldChange}
+            label='Display Field'
           />
         </div>
       ) : null}

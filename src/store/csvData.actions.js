@@ -5,6 +5,7 @@ export const LOAD_DATA = 'LOAD_DATA';
 export const APPLY_FILTERS = 'APPLY_FILTERS';
 export const SET_STATE_AND_GROUP = 'SET_STATE_AND_GROUP';
 export const SET_DISPLAY_FN = 'SET_DISPLAY_FN';
+export const ADD_FILTER_FN = 'ADD_FILTER_FN';
 
 export const loadData = (url) => async (dispatch) => {
   dispatch({ type: REQUEST_DATA });
@@ -20,17 +21,25 @@ export const loadData = (url) => async (dispatch) => {
   });
 };
 
-
-export const setDisplayFn = (displayValue, fn) => {
+export const setDisplayFn = (displayField, fn) => {
   return {
     type: SET_DISPLAY_FN,
     payload: {
-      displayValue,
+      displayField,
       displayFunction: fn,
-    }
-  }
-}
+    },
+  };
+};
 
+export const addFilter = (filterFn, filterName) => {
+  return {
+    type: ADD_FILTER_FN,
+    payload: {
+      fn: filterFn,
+      name: filterName,
+    },
+  };
+};
 
 export const groupData = (stateKey) => {
   return {
@@ -40,8 +49,6 @@ export const groupData = (stateKey) => {
     },
   };
 };
-
-
 
 export const convertCSVToJSON = (str, delimiter = ',') => {
   const titles = str.slice(0, str.indexOf('\n')).split(delimiter);
@@ -57,5 +64,3 @@ export const convertCSVToJSON = (str, delimiter = ',') => {
     }),
   ];
 };
-
-

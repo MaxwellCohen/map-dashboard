@@ -24,7 +24,7 @@ const Grid = () => {
     }
 
     return (
-        <div className="ag-theme-alpine" style={ { height: 400, width: '95%', margin: '0px 10px' } }>
+        <div className="ag-theme-alpine" style={ { height: 400, width: '100%', marginRight: '' } }>
             <AgGridReact
                defaultColDef={{ resizable: true }}
                onGridReady={onGridReady}
