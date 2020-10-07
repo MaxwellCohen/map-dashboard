@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import BasicTextFields from './BasicTextFields';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import * as Actions from '../store/csvData.actions';
 
 const getQueryVariable = (variable) => {
@@ -8,7 +8,7 @@ const getQueryVariable = (variable) => {
   var vars = query.split('&');
   for (var i = 0; i < vars.length; i++) {
     var pair = vars[i].split('=');
-    if (decodeURIComponent(pair[0]) == variable) {
+    if (decodeURIComponent(pair[0]) === variable) {
       return decodeURIComponent(pair[1]);
     }
   }

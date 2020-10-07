@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
