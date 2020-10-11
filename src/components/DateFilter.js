@@ -68,13 +68,15 @@ const DateFilter = () => {
   };
 
   const onStartDateChange = (e) => {
-    setStartDate(e.target.value);
-    updateFilter(dateField, e.target.value, endDate);
+    const date = e.target.value;
+    setStartDate(date);
+    updateFilter(dateField, date, endDate);
   };
 
   const onEndDateChange = (e) => {
-    setEndDate(e.target.value);
-    updateFilter(dateField, startDate, e.target.value);
+    const date = e.target.value;
+    setEndDate(date);
+    updateFilter(dateField, startDate, date);
   };
 
   const updateFilter = (field, minVal, maxVal) => {
@@ -96,7 +98,7 @@ const DateFilter = () => {
         alignContent: 'center',
         justifyContent: 'space-between',
       }}>
-      <div style={{ width: '45%', alignSelf:'center' }}>
+      <div style={{ width: '45%', alignSelf: 'center' }}>
         <DropDown
           value={dateField}
           values={titles}
@@ -105,17 +107,17 @@ const DateFilter = () => {
         />
       </div>
       {dateField ? (
-        <div>
+        <div style={{display:'flex', flexDirection: 'row'}}>
           <DatePicker
             label='From'
             min={minDate}
-            max={maxDate}
+            max={endDate}
             value={startDate}
             onChange={onStartDateChange}
           />
           <DatePicker
             label='To'
-            min={minDate}
+            min={startDate}
             max={maxDate}
             value={endDate}
             onChange={onEndDateChange}

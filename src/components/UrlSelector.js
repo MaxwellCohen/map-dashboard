@@ -15,6 +15,13 @@ const getQueryVariable = (variable) => {
   console.log('Query variable %s not found', variable);
 };
 
+const updateQuery = (key, name) => {
+  const queryParams = new URLSearchParams(window.location.search);
+  queryParams.set(key, name);
+  window.history.replaceState(null, null, '?' + queryParams.toString());
+}
+
+
 //'http://d14wlfuexuxgcm.cloudfront.net/covid/rt.csv'
 const UrlSelector = () => {
   const dispatch = useDispatch();
@@ -25,13 +32,9 @@ const UrlSelector = () => {
       if (url === newUrl){
         return;
       }
-
       setUrl(newUrl);
       dispatch(Actions.loadData(newUrl));
-
-      const queryParams = new URLSearchParams(window.location.search);
-      queryParams.set('url', newUrl);
-      window.history.replaceState(null, null, '?' + queryParams.toString());
+      updateQuery('url', newUrl);
     },
     [setUrl, dispatch, url],
   );

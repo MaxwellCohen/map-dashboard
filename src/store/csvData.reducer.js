@@ -1,14 +1,15 @@
 import * as Actions from './csvData.actions';
 import stateMap from '../constants/stateMap';
 const inital_state = {
-  titles: [],
-  rawData: [],
+  titles: [], // list of keys that can be selected 
+  rawData: [], // the parsed CSV file
+  filteredData: [], // any filters run on the data (using filter funciton) also showen in table//
   stateKey: '',
   groupData: [],
   displayField: '',
   filteringFuncitons: [],
   displayFunction: null,
-  mapData: [],
+  mapData: [], //data grouped and agrated 
   loading: false,
 };
 
@@ -22,36 +23,37 @@ export default (state = inital_state, action) => {
     case Actions.LOAD_DATA:
     const  titles = action?.payload?.titles || [];
     const rawData = action?.payload?.rawData || [];
-    const stateKey = titles.filter((t) => normalizeState((rawData[0] || {})[t]) )[0] || '';
-
-      return {
-        ...inital_state,
-        rawData,
-        titles,
-        stateKey,
-        data: action.payload.data,
-        groupData: groupData(stateKey, rawData),
-      };
+    const stateKey = titles.find((t) => normalizeState((rawData[0] || {})[t]) ) || '';
+    return {
+      ...inital_state,
+      rawData,
+      filteredData: rawData,
+      mapData: [],
+      titles,
+      stateKey
+    }
     case Actions.SET_STATE_AND_GROUP: 
     return {
       ...state,
       stateKey: action.payload.stateKey,
-      groupData: groupData(action.payload.stateKey, state.rawData),
+      mapData: [],
     }
     case Actions.SET_DISPLAY_FN: 
     return {
       ...state,
       displayField: action.payload.displayField,
       displayFunction: action.payload.displayFunction,
-      mapData: applyfilters(state.groupData,state.filteringFuncitons, action.payload.displayFunction)
+      mapData: processToDisplay(state.filteredData, state.stateKey, action.payload.displayFunction)
     }
     case Actions.ADD_FILTER_FN:
     const existingFilters = state.filteringFuncitons.filter(({name})=> name !== action.payload.name);
     const filteringFuncitons = [...existingFilters, action.payload];
+    const filteredData = filterData(state.rawData, filteringFuncitons)
     return {
       ...state,
       filteringFuncitons,
-      mapData: applyfilters(state.groupData, filteringFuncitons, state.displayFunction)
+      filteredData,
+      mapData: processToDisplay(filteredData, state.stateKey, state.displayFunction)
     }
     case Actions.APPLY_FILTERS: 
     return {
@@ -97,17 +99,29 @@ const normalizeState = (state) => {
 }
 
 
-export const applyfilters = (data, filters, displayFn) => {
-  return data.map(([key, arr]) => {
-    let filterArr = arr;
-    if(filters.length !== 0) {
-      filterArr = arr.filter((value) => {
-        const results = filters.map(({fn}) => fn(value)).filter(Boolean);
-        return results.length === filters.length;
-      } )
-    }
-    const displayVal = displayFn(filterArr);
-    return [key, displayVal, filterArr]
+export const filterData = (rawData, filters) => {
+  if (filters.length === 0) {
+    return rawData;
+  }
+  return rawData.filter((value) => {
+    const results = filters.map(({fn}) => fn(value)).filter(Boolean);
+    return results.length === filters.length;
+  } )
+}
+
+
+export const processToDisplay = (data, stateKey, displayFn) => {
+  if (!displayFn) {
+    return []
+  }
+  const groupedData = groupData(stateKey, data);
+  if (groupedData.length === 0) {
+    return [];
+  }
+
+  return groupedData.map(([key, arr]) => {
+    const displayVal = displayFn(arr);
+    return [key, displayVal, arr]
   } )
 
 };

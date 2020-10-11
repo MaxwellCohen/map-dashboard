@@ -16,16 +16,17 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DatePickers(props) {
   const classes = useStyles();
-
+  console.log(props )
   return (
     <div >
       <TextField
-        labelId={'date-picker-' +props.label }
+        labelid={'date-picker-' +props.label }
         type="date"
         className={classes.textField}
         InputLabelProps={{
           shrink: true,
         }}
+        InputProps={{ inputProps: { ...props } }}
         {...props}
       />
     </div>

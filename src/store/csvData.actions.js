@@ -1,5 +1,4 @@
-import { getCSV } from '../api/googleSheetsApi';
-
+import { getCSV } from '../api/api';
 export const REQUEST_DATA = 'REQUEST_DATA';
 export const LOAD_DATA = 'LOAD_DATA';
 export const APPLY_FILTERS = 'APPLY_FILTERS';

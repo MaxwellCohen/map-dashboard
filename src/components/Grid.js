@@ -9,7 +9,7 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 const Grid = () => {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const { rawData,   titles} = useSelector(({ data }) => data);
+    const { filteredData,   titles} = useSelector(({ data }) => data);
     const onGridReady = (params) => {
       setGridApi(params.api);
       setGridColumnApi(params.columnApi);
@@ -29,7 +29,7 @@ const Grid = () => {
                defaultColDef={{ resizable: true }}
                onGridReady={onGridReady}
                onRowDataChanged={updateRows}
-                rowData={rawData}>
+                rowData={filteredData}>
                   {titles.map(v  => 
                     <AgGridColumn key={v} field={v} sortable={true} filter={true} skipHeaderOnAutoSize={true} suppressSizeToFit={false}></AgGridColumn>
                   ) }

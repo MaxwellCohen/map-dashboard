@@ -1,43 +1,22 @@
 import React from 'react';
-import Chart from './components/Chart';
-import UrlSelector from './components/UrlSelector';
 import Grid from './components/Grid';
-import DataSelector from './components/DataSelector';
-import DateFilter from './components/DateFilter';
+import ChartSection from './sections/ChartSection';
+import SettingSection from './sections/SettingSection';
 
 const App = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{textAlign: 'center'}}> 
+      <h1>Map Dashboard</h1>
+      </div>
       <div
         style={{
           display: 'flex',
           padding: '10px',
           justifyContent: 'space-between',
         }}>
-        <div style={{ width: '33%', padding: '10px' }}>
-          <div style={{ padding: '10px' }}>
-            <UrlSelector />
-          </div>
-          <div style={{ padding: '10px' }}>
-            <DataSelector />
-          </div>
-          <div style={{ padding: '10px' }}>
-            <DateFilter />
-          </div>
-          {/* <div>Date Filter</div> */}
-          {/* <DatePicker /> */}
-          {/*
-          <div>action</div>
-          <div>min color</div>
-          <div>min value</div>
-          <div>median color</div>
-          <div>max color</div>
-          <div>max value</div> */}
-        </div>
-        <div
-          style={{ width: '600', height: '400px', border: '1px solid black' }}>
-          <Chart />
-        </div>
+        <SettingSection />
+        <ChartSection />
       </div>
       <div style={{ flex: 1, padding: '10px' }}>
         <Grid />
