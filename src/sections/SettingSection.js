@@ -28,7 +28,6 @@ const SettingSection = () => {
         width: '50%',
         padding: '10px',
         border: '1px solid #c4c4c4',
-        overflow: 'scroll',
       }}>
       <Accordion>
         <AccordionSummary aria-controls='panel1a-content' id='panel1a-header'>
