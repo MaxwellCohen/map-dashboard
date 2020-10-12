@@ -1,5 +1,8 @@
 import * as Actions from './csvData.actions';
 import stateMap from '../constants/stateMap';
+import Calculations from '../utils/Calculations';
+import {camelCase} from 'lodash'
+
 const inital_state = {
   titles: [], // list of keys that can be selected 
   rawData: [], // the parsed CSV file
@@ -7,8 +10,8 @@ const inital_state = {
   stateKey: '',
   groupData: [],
   displayField: '',
+  aggregationAction: '',
   filteringFuncitons: [],
-  displayFunction: null,
   mapData: [], //data grouped and agrated 
   loading: false,
 };
@@ -38,12 +41,12 @@ export default (state = inital_state, action) => {
       stateKey: action.payload.stateKey,
       mapData: [],
     }
-    case Actions.SET_DISPLAY_FN: 
+    case Actions.SET_DISPLAY: 
     return {
       ...state,
       displayField: action.payload.displayField,
-      displayFunction: action.payload.displayFunction,
-      mapData: processToDisplay(state.filteredData, state.stateKey, action.payload.displayFunction)
+      aggregationAction: action.payload.aggregationAction,
+      mapData: processToDisplay(state.filteredData, state.stateKey, action.payload.displayField, camelCase(action.payload.aggregationAction))
     }
     case Actions.ADD_FILTER_FN:
     const existingFilters = state.filteringFuncitons.filter(({name})=> name !== action.payload.name);
@@ -110,8 +113,8 @@ export const filterData = (rawData, filters) => {
 }
 
 
-export const processToDisplay = (data, stateKey, displayFn) => {
-  if (!displayFn) {
+export const processToDisplay = (data, stateKey, displayField, aggregationAction) => {
+  if (!aggregationAction || !displayField) {
     return []
   }
   const groupedData = groupData(stateKey, data);
@@ -120,8 +123,10 @@ export const processToDisplay = (data, stateKey, displayFn) => {
   }
 
   return groupedData.map(([key, arr]) => {
-    const displayVal = displayFn(arr);
-    return [key, displayVal, arr]
+    const calc = new Calculations(arr, displayField)
+    console.log(calc);
+    const displayVal = calc[aggregationAction]();
+    return [key, displayVal]
   } )
 
 };

@@ -3,6 +3,8 @@ export const REQUEST_DATA = 'REQUEST_DATA';
 export const LOAD_DATA = 'LOAD_DATA';
 export const APPLY_FILTERS = 'APPLY_FILTERS';
 export const SET_STATE_AND_GROUP = 'SET_STATE_AND_GROUP';
+export const SET_DISPLAY = 'SET_DISPLAY_FIELD';
+export const SET_AGGREGATION_TYPE = 'SET_AGGREGATION_TYPE';
 export const SET_DISPLAY_FN = 'SET_DISPLAY_FN';
 export const ADD_FILTER_FN = 'ADD_FILTER_FN';
 
@@ -20,15 +22,17 @@ export const loadData = (url) => async (dispatch) => {
   });
 };
 
-export const setDisplayFn = (displayField, fn) => {
+export const updateDisplay = (displayField, aggregationAction) => {
   return {
-    type: SET_DISPLAY_FN,
+    type: SET_DISPLAY,
     payload: {
       displayField,
-      displayFunction: fn,
+      aggregationAction
     },
   };
 };
+
+
 
 export const addFilter = (filterFn, filterName) => {
   return {
