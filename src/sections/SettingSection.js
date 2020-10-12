@@ -8,6 +8,7 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
+import ChartSettings from '../components/ChartSettings';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,6 +55,14 @@ const SettingSection = () => {
         </AccordionSummary>
         <AccordionDetails>
           <DataSelector />
+        </AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary aria-controls='panel4a-content' id='panel3a-header'>
+          <Typography className={classes.heading}>Chart Settings</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <ChartSettings />
         </AccordionDetails>
       </Accordion>
     </div>

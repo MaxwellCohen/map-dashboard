@@ -21,9 +21,6 @@ const makeOptions = (data, displayField) => {
     title: {
       text: '',
     },
-    credits: {
-      enabled: false,
-    },
     mapNavigation: {
       enabled: true,
     },

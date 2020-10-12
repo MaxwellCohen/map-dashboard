@@ -53,7 +53,7 @@ export default (state = inital_state, action) => {
         displayField: action.payload.displayField,
         aggregationAction: action.payload.aggregationAction,
         mapData: aggerationOnly
-          ? updateAaggregationAction(
+          ? updateAggregationAction(
               state.mapData,
               action.payload.aggregationAction,
             )
@@ -156,7 +156,7 @@ export const processToDisplay = (
   });
 };
 
-export const updateAaggregationAction = (groupedData, aggregationAction) => {
+export const updateAggregationAction = (groupedData, aggregationAction) => {
   if (!aggregationAction) {
     return [];
   }

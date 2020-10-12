@@ -7,7 +7,7 @@ const App = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{textAlign: 'center'}}> 
-      <h1>Map Dashboard</h1>
+      <h1>US State Data Mapping Tool</h1>
       </div>
       <div
         style={{

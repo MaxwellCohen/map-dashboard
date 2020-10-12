@@ -44,7 +44,7 @@ const UrlSelector = () => {
     if (queryURL) {
       dispatch(Actions.loadData(queryURL));
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <div style={{ width: '100%' }}>
