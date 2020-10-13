@@ -1,19 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import DropDown from './DropDown';
 import * as Actions from '../store/csvData/csvData.actions';
 import Calculations from '../utils/Calculations';
 import {startCase} from 'lodash'
-
-const averageData = (key, arr) => {
-  let average = (array) => {
-    if (array.length > 0) {
-      return array.reduce((a, b) => a + b, 0) / array.length;
-    }
-  };
-  const cleanArr = arr.map((a) => parseFloat(a[key])).filter((a) => !isNaN(a));
-  return average(cleanArr).toFixed(2);
-};
 
 const aggerationOptions = Object.getOwnPropertyNames(Calculations.prototype)
   .filter((k) => k !== 'constructor')

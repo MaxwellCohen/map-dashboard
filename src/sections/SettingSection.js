@@ -9,7 +9,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ChartSettings from '../components/ChartSettings';
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,52 +21,82 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SettingSection = () => {
+const DataSourceAccordion = () => {
   const classes = useStyles();
+  return (
+    <Accordion>
+      <AccordionSummary aria-controls='panel1a-content' id='panel1a-header'>
+        <Typography className={classes.heading}>Data Source</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <UrlSelector />
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+const ChartSettingsAccordion = () => {
+  const classes = useStyles();
+  return (
+    <Accordion>
+      <AccordionSummary aria-controls='panel4a-content' id='panel3a-header'>
+        <Typography className={classes.heading}>Chart Settings</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <ChartSettings />
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+const FiltersAccordion = () => {
+  const classes = useStyles();
+  return (
+    <Accordion>
+      <AccordionSummary aria-controls='panel2a-content' id='panel3a-header'>
+        <Typography className={classes.heading}>Filters</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <DateFilter />
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+const AggregationSettingsAccordion = () => {
+  const classes = useStyles();
+  return (
+    <Accordion>
+      <AccordionSummary aria-controls='panel3a-content' id='panel3a-header'>
+        <Typography className={classes.heading}>
+          Aggregation Settings
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <DataSelector />
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
+const SettingSection = () => {
+  const { loading, titles } = useSelector(({ data }) => data);
+
+  console.log(titles.length)
   return (
     <div
       style={{
         width: '50%',
         padding: '10px',
         border: '1px solid #c4c4c4',
-        overflow: 'scroll'
+        overflow: 'scroll',
       }}>
-      <Accordion >
-        <AccordionSummary aria-controls='panel1a-content' id='panel1a-header'>
-          <Typography className={classes.heading}>Data Source</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <UrlSelector />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary aria-controls='panel4a-content' id='panel3a-header'>
-          <Typography className={classes.heading}>Chart Settings</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <ChartSettings />
-        </AccordionDetails>
-      </Accordion>
-
-      <Accordion>
-        <AccordionSummary aria-controls='panel2a-content' id='panel3a-header'>
-          <Typography className={classes.heading}>Filters</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <DateFilter />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary aria-controls='panel3a-content' id='panel3a-header'>
-          <Typography className={classes.heading}>
-            Aggregation Settings
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <DataSelector />
-        </AccordionDetails>
-      </Accordion>
-
+      <DataSourceAccordion />
+      {loading ? 'loading' : null}
+      {!loading && titles.length ? <ChartSettingsAccordion /> : null}
+      {titles.length ? (
+        <>
+          <FiltersAccordion />
+          <AggregationSettingsAccordion />
+        </>
+      ) : null}
     </div>
   );
 };

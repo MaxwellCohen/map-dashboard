@@ -4,15 +4,22 @@ import './index.css';
 import App from './App';
 import { Provider as ReduxProvider } from 'react-redux';
 import {createStore, combineReducers, applyMiddleware} from 'redux';
-import ReduxThunk from 'redux-thunk';
 import * as serviceWorker from './serviceWorker';
 import csvDataReducer from './store/csvData/csvData.reducer';
 import mapOptions from './store/mapOptions/mapOptions.reducer';
+import createSagaMiddleware from 'redux-saga'
+import mySaga from './store/csvData/sagas';
+
+
+const sagaMiddleware = createSagaMiddleware()
+
 
 const store = createStore(combineReducers({
   data: csvDataReducer,
   options: mapOptions,
-}),applyMiddleware(ReduxThunk))
+}), applyMiddleware(sagaMiddleware));
+
+sagaMiddleware.run(mySaga);
 
 ReactDOM.render(
 

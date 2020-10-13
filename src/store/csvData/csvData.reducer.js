@@ -1,7 +1,6 @@
 import * as Actions from './csvData.actions';
-import stateMap from '../../constants/stateMap';
-import Calculations from '../../utils/Calculations';
-import { camelCase } from 'lodash';
+import { filterData, groupData, processToDisplay, updateAggregationAction } from './csvDataTools';
+
 
 const inital_state = {
   url: '',
@@ -21,24 +20,20 @@ export default (state = inital_state, action) => {
   switch (action.type) {
     case Actions.REQUEST_DATA:
       return {
-        ...state,
+        ...inital_state,
         loading: true,
       };
-    case Actions.LOAD_DATA:
-      const titles = action?.payload?.titles || [];
-      const rawData = action?.payload?.rawData || [];
-      const stateKey =
-        titles.find((t) => normalizeState((rawData[0] || {})[t])) || '';
+    case Actions.LOAD_DATA_SUCCESS:
       return {
         ...inital_state,
-        url: action.payload.url,
-        rawData,
-        filteredData: rawData,
-        groupData: groupData(stateKey, rawData),
-        mapData: [],
-        titles,
-        stateKey,
+        loading: false,
+        ...action.payload
       };
+    case Actions.LOAD_DATA_FAILURE: 
+    return {
+      ...inital_state,
+      loading: false
+    };
     case Actions.SET_STATE_AND_GROUP:
       return {
         ...state,
@@ -95,73 +90,4 @@ export default (state = inital_state, action) => {
   }
 };
 
-const groupData = (stateKey, data) => {
-  if (!stateKey) {
-    return [];
-  }
-  const obj = data.reduce((acc, item) => {
-    if (!item[stateKey]) {
-      return acc;
-    }
-    const key = normalizeState(item[stateKey]);
-    if (!key) {
-      return acc;
-    }
-    if (!acc[key]) {
-      acc[key] = [key, []];
-    }
-    acc[key][1].push(item);
-    return acc;
-  }, {});
-  return Object.values(obj);
-};
 
-const normalizeState = (state) => {
-  if (typeof state !== 'string') {
-    return null;
-  }
-  const cleanState = stateMap[state.toLowerCase().replace(/[^a-z]/gim, '')];
-  if (cleanState) {
-    return 'us-' + cleanState;
-  }
-  return null;
-};
-
-export const filterData = (rawData, filters) => {
-  if (filters.length === 0) {
-    return rawData;
-  }
-  return rawData.filter((value) => {
-    const results = filters.map(({ fn }) => fn(value)).filter(Boolean);
-    return results.length === filters.length;
-  });
-};
-
-export const processToDisplay = (
-  groupedData,
-  displayField,
-  aggregationAction,
-) => {
-  if (!aggregationAction || !displayField) {
-    return [];
-  }
-
-  aggregationAction = camelCase(aggregationAction);
-  return groupedData.map(([key, arr]) => {
-    const calc = new Calculations(arr, displayField);
-    const displayVal = calc[aggregationAction]();
-    return [key, displayVal, calc];
-  });
-};
-
-export const updateAggregationAction = (mapData, aggregationAction) => {
-  if (!aggregationAction || !Array.isArray(mapData)) {
-    return [];
-  }
-
-  aggregationAction = camelCase(aggregationAction);
-  return mapData.map(([key, df, calc]) => {
-    const displayVal = calc[aggregationAction]();
-    return [key, displayVal, calc];
-  });
-};
