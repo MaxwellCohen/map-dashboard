@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import DropDown from './DropDown';
-import * as Actions from '../store/csvData.actions';
+import * as Actions from '../store/csvData/csvData.actions';
 import Calculations from '../utils/Calculations';
 import {startCase} from 'lodash'
 

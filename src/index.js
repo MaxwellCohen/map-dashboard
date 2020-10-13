@@ -6,9 +6,12 @@ import { Provider as ReduxProvider } from 'react-redux';
 import {createStore, combineReducers, applyMiddleware} from 'redux';
 import ReduxThunk from 'redux-thunk';
 import * as serviceWorker from './serviceWorker';
-import csvDataReducer from './store/csvData.reducer';
+import csvDataReducer from './store/csvData/csvData.reducer';
+import mapOptions from './store/mapOptions/mapOptions.reducer';
+
 const store = createStore(combineReducers({
-  data: csvDataReducer
+  data: csvDataReducer,
+  options: mapOptions,
 }),applyMiddleware(ReduxThunk))
 
 ReactDOM.render(

@@ -4,18 +4,27 @@ import { AgGridReact, AgGridColumn } from 'ag-grid-react';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import NumericEditor from './NumericEditor';
 import ColorEditor from './ColorEditor';
+import * as Actions from '../store/mapOptions/mapOptions.actions';
+import { useSelector, useDispatch } from 'react-redux';
+import Button from "@material-ui/core/Button";
+
+
+
 
 const ChartSettings = () => {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [breakPointData, setBreakPointData] = useState([
-    { breakPoint: 0, color: '#00FF00' },
-    { breakPoint: 0.5, color: '#ffffff' },
-    { breakPoint: 1, color: '#C40401' },
-  ]);
-  const [title, setTitle] = useState('');
-  const [min, setMin] = useState('');
-  const [max, setMax] = useState('');
+  const dispatch = useDispatch();
+  const title = useSelector(({ options }) => options.title.text);
+  const min = useSelector(({ options }) => options.colorAxis.min);
+  const max = useSelector(({ options }) => options.colorAxis.max);
+  const stopData = useSelector(({ options }) =>
+    options.colorAxis.stops.map(([stop, color], i) => ({
+      stop,
+      color,
+      _id: i+stop+color
+    })),
+  );
 
   function onGridReady(params) {
     setGridApi(params.api);
@@ -23,44 +32,68 @@ const ChartSettings = () => {
   }
 
   const onCellValueChanged = (prams) => {
-    const cloneBreakPointData = [...breakPointData];
-    cloneBreakPointData[prams.rowIndex] = prams.data;
-    setBreakPointData(cloneBreakPointData);
+    const cloneStopData = stopData.map((e) => ({...e}));
+    cloneStopData[prams.rowIndex] = {...prams.data};
+    const data = cloneStopData.map(({ stop, color }) => [
+      stop,
+      color,
+    ]);
+    dispatch(Actions.setColorAxisStops(data))
+  };
+
+  const addStop = () => {
+    const data = [...stopData.map(({ stop, color }) => [
+      stop,
+      color,
+    ]), [0, '#000']];
+    dispatch(Actions.setColorAxisStops(data))
+  };
+  const deleteRow = (rowData) => {
+    const data = stopData.filter((r)=> r !== rowData.data).map(({ stop, color }) => [
+      stop,
+      color,
+    ])
+    dispatch(Actions.setColorAxisStops(data))
   };
 
   const setTitleHandle = (v) => {
-    setTitle(v)
-  }
+    dispatch(Actions.setTitle(v));
+  };
 
   const setMinHandle = (v) => {
-    setMin(v);
-  }
+    dispatch(Actions.setColorAxisMin(v));
+  };
   const setMaxHandle = (v) => {
-    setMax(v);
-  }
+    dispatch(Actions.setColorAxisMax(v));
+  };
 
+
+  const DeleteButton = (data) => {
+    return <Button  style={{width:'100%'}} onClick={()=> deleteRow(data)}>Delete</Button>
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
       <BasicTextField
         label='title'
-        defaultValue={title}
-        onBlur={(e) => setTitleHandle(e.target.value)}
+        value={title}
+        onChange={(e) => setTitleHandle(e.target.value)}
       />
       <div style={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
         <BasicTextField
           label='Color Axis Min'
-          defaultValue={min}
-          onBlur={(e) => setMinHandle(e.target.value)}
+          value={min}
+          onChange={(e) => setMinHandle(e.target.value)}
         />
         <BasicTextField
           label='Color Axis Max'
-          defaultValue={max}
-          onBlur={(e) => setMaxHandle(e.target.value)}
+          value={max}
+          onChange={(e) => setMaxHandle(e.target.value)}
         />
+         <Button  style={{width:'33%'}} onClick={addStop}>Add stop</Button>
       </div>
       <div style={{ width: '100%' }}>
-        <div className='ag-theme-alpine' style={{ height: 150, width: '100%' }}>
+        <div className='ag-theme-alpine' style={{ height: 300, width: '100%' }}>
           <AgGridReact
             defaultColDef={{
               flex: 1,
@@ -75,18 +108,38 @@ const ChartSettings = () => {
             frameworkComponents={{
               numericEditor: NumericEditor,
               colorEditor: ColorEditor,
+              deleteButton: DeleteButton
             }}
-            rowData={breakPointData}>
+            immutableData
+            getRowNodeId={(data) => data._id}
+            rowData={stopData}>
             <AgGridColumn
-              field='breakPoint'
+              field='stop'
               sortable={true}
               editable={true}
+
               cellEditor='numericEditor'></AgGridColumn>
             <AgGridColumn
+              flex={2}
               field='color'
               editable={true}
               cellEditor='colorEditor'
-              isPopup={true}></AgGridColumn>
+              
+              cellStyle={(prams) => {
+                return {
+                  backgroundColor: prams?.value,
+                  color: 'white',
+                  textShadow:
+                    '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000',
+                  letterSpacing: '2px',
+                };
+              }}
+              ></AgGridColumn>
+            <AgGridColumn
+              headerName="Delete"
+              cellRenderer='deleteButton'
+              editable={false}
+              ></AgGridColumn>
           </AgGridReact>
         </div>
       </div>

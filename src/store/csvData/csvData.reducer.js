@@ -1,9 +1,10 @@
 import * as Actions from './csvData.actions';
-import stateMap from '../constants/stateMap';
-import Calculations from '../utils/Calculations';
+import stateMap from '../../constants/stateMap';
+import Calculations from '../../utils/Calculations';
 import { camelCase } from 'lodash';
 
 const inital_state = {
+  url: '',
   titles: [], // list of keys that can be selected
   rawData: [], // the parsed CSV file
   filteredData: [], // any filters run on the data (using filter funciton) also showen in table//
@@ -30,6 +31,7 @@ export default (state = inital_state, action) => {
         titles.find((t) => normalizeState((rawData[0] || {})[t])) || '';
       return {
         ...inital_state,
+        url: action.payload.url,
         rawData,
         filteredData: rawData,
         mapData: [],
@@ -157,7 +159,7 @@ export const processToDisplay = (
 };
 
 export const updateAggregationAction = (groupedData, aggregationAction) => {
-  if (!aggregationAction) {
+  if (!aggregationAction || Array.isArray(groupedData)) {
     return [];
   }
 

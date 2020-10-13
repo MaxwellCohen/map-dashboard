@@ -14,6 +14,7 @@ const App = () => {
           display: 'flex',
           padding: '10px',
           justifyContent: 'space-between',
+          height: '422px'
         }}>
         <SettingSection />
         <ChartSection />

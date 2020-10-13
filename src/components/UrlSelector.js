@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import BasicTextFields from './BasicTextFields';
 import { useDispatch } from 'react-redux';
-import * as Actions from '../store/csvData.actions';
+import * as Actions from '../store/csvData/csvData.actions';
 
 const getQueryVariable = (variable) => {
   var query = window.location.search.substring(1);

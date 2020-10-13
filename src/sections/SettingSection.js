@@ -28,6 +28,7 @@ const SettingSection = () => {
         width: '50%',
         padding: '10px',
         border: '1px solid #c4c4c4',
+        overflow: 'scroll'
       }}>
       <Accordion>
         <AccordionSummary aria-controls='panel1a-content' id='panel1a-header'>
@@ -35,6 +36,14 @@ const SettingSection = () => {
         </AccordionSummary>
         <AccordionDetails>
           <UrlSelector />
+        </AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary aria-controls='panel4a-content' id='panel3a-header'>
+          <Typography className={classes.heading}>Chart Settings</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <ChartSettings />
         </AccordionDetails>
       </Accordion>
 
@@ -56,14 +65,7 @@ const SettingSection = () => {
           <DataSelector />
         </AccordionDetails>
       </Accordion>
-      <Accordion>
-        <AccordionSummary aria-controls='panel4a-content' id='panel3a-header'>
-          <Typography className={classes.heading}>Chart Settings</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <ChartSettings />
-        </AccordionDetails>
-      </Accordion>
+
     </div>
   );
 };

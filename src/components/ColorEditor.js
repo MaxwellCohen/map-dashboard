@@ -4,26 +4,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { SketchPicker } from 'react-color'
 
-import ReactColorPicker from '@super-effective/react-color-picker';
 import './ColorEditor.css';
 const ColorEditor = forwardRef((props, ref) => {
-  console.log(props, ref);
-  const createInitialState = () => {
-    let startValue;
-    let highlightAllOnFocus = true;
-    startValue = props.value;
-    return {
-      value: startValue,
-      highlightAllOnFocus,
-    };
-  };
-
-  const initialState = createInitialState();
-
-  const [value, setValue] = useState(initialState.value);
-
+  const [value, setValue] = useState(props.value);
   const refInput = useRef(null);
+
 
   useImperativeHandle(ref, () => {
     return {
@@ -38,13 +25,12 @@ const ColorEditor = forwardRef((props, ref) => {
 
   return (
     <div ref={refInput} style={{ padding: '10px' }}>
-      <ReactColorPicker
-        color={initialState.value}
-        name='color'
-        value={value}
-        showHex
-        onChange={(color) => {
-          setValue(color);
+      <SketchPicker
+        color={value}
+        onChangeComplete={({hex}) => {
+          if (hex) {
+            setValue(hex);
+          }
         }}
       />
     </div>

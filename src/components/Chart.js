@@ -2,72 +2,29 @@ import React, { useEffect, useState } from 'react';
 import Highcharts from 'highcharts/highmaps';
 import HighchartsReact from 'highcharts-react-official';
 import highchartsMap from 'highcharts/modules/map';
-import mapData from '@highcharts/map-collection/countries/us/us-all.geo.json';
+import * as Actions from '../store/mapOptions/mapOptions.actions';
 import proj4 from 'proj4';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 highchartsMap(Highcharts);
 if (typeof window !== 'undefined') {
   window.proj4 = window.proj4 || proj4;
 }
 
-const makeOptions = (data, displayField) => {
-  const valArray = data.map((v) => v[1]);
-
-  const option = {
-    chart: {
-      map: mapData,
-    },
-    title: {
-      text: '',
-    },
-    mapNavigation: {
-      enabled: true,
-    },
-    colorAxis: {
-      min: Math.min(...valArray),
-      max: Math.max(...valArray),
-      stops: [
-        [0, '#00FF00'],
-        [0.5, '#ffffff'],
-        [1, '#C40401'],
-      ],
-    },
-    series: [
-      {
-        name: 'Separators',
-        type: 'mapline',
-        color: 'silver',
-        nullColor: 'silver',
-        showInLegend: false,
-        enableMouseTracking: false,
-      },
-      {
-        name: displayField,
-        data: [...data],
-        dataLabels: {
-          enabled: true,
-          format: '{point.name}',
-        },
-      },
-    ],
-  };
-
-  return option;
-};
-
 const Chart = () => {
   const { mapData, displayField } = useSelector(({ data }) => data);
-  const [options, setOptions] = useState(null);
+  const options  = useSelector(({ options }) => options);
+  const dispatch = useDispatch();
 
+  console.log(options)
   useEffect(() => {
     if (mapData.length !== 0) {
-      setOptions(makeOptions(mapData, displayField));
+      dispatch(Actions.setMapData(mapData, displayField));
       console.log(mapData);
     } else {
-      setOptions(null);
+      dispatch(Actions.setMapData())
     }
-  }, [mapData, displayField]);
+  }, [mapData, displayField, dispatch]);
 
   return (
     <>

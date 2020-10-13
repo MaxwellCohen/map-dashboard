@@ -1,4 +1,4 @@
-import { getCSV } from '../api/api';
+import { getCSV } from '../../api/api';
 export const REQUEST_DATA = 'REQUEST_DATA';
 export const LOAD_DATA = 'LOAD_DATA';
 export const APPLY_FILTERS = 'APPLY_FILTERS';
@@ -10,12 +10,12 @@ export const ADD_FILTER_FN = 'ADD_FILTER_FN';
 
 export const loadData = (url) => async (dispatch) => {
   dispatch({ type: REQUEST_DATA });
-  console.log('loading data');
   const { data: apiData } = await getCSV(url);
   const [titles, rawData] = convertCSVToJSON(apiData);
   dispatch({
     type: LOAD_DATA,
     payload: {
+      url,
       titles: titles,
       rawData: rawData,
     },

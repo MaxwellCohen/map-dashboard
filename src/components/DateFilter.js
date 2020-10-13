@@ -4,7 +4,7 @@ import min from 'date-fns/min';
 import max from 'date-fns/max';
 import format from 'date-fns/format';
 import { useSelector, useDispatch } from 'react-redux';
-import * as Actions from '../store/csvData.actions';
+import * as Actions from '../store/csvData/csvData.actions';
 import DropDown from './DropDown';
 import DatePicker from './DatePicker';
 
