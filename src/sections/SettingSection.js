@@ -9,6 +9,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ChartSettings from '../components/ChartSettings';
+import {useSelector} from 'react-redux'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,7 +31,7 @@ const SettingSection = () => {
         border: '1px solid #c4c4c4',
         overflow: 'scroll'
       }}>
-      <Accordion>
+      <Accordion >
         <AccordionSummary aria-controls='panel1a-content' id='panel1a-header'>
           <Typography className={classes.heading}>Data Source</Typography>
         </AccordionSummary>

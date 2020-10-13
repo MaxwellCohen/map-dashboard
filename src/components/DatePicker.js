@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DatePickers(props) {
   const classes = useStyles();
-  console.log(props )
   return (
     <div >
       <TextField

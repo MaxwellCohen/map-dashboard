@@ -58,7 +58,6 @@ const DateFilter = () => {
       setEndDate(maxDateValue);
       updateFilter(v, minDateValue, maxDateValue);
     } catch (e) {
-      console.log(e);
       setDateField('');
       setMinDate('');
       setStartDate('');
@@ -80,7 +79,6 @@ const DateFilter = () => {
   };
 
   const updateFilter = (field, minVal, maxVal) => {
-    console.log(field, minVal, maxVal);
     const fn = filterDates.bind(
       null,
       field,

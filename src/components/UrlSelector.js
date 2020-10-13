@@ -12,7 +12,6 @@ const getQueryVariable = (variable) => {
       return decodeURIComponent(pair[1]);
     }
   }
-  console.log('Query variable %s not found', variable);
 };
 
 const updateQuery = (key, name) => {
@@ -28,7 +27,6 @@ const UrlSelector = () => {
   const [url, setUrl] = useState(getQueryVariable('url') || '');
   const setURL = useCallback(
     (newUrl) => {
-      console.log(newUrl)
       if (url === newUrl){
         return;
       }

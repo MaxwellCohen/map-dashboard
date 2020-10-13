@@ -15,12 +15,9 @@ const Chart = () => {
   const { mapData, displayField } = useSelector(({ data }) => data);
   const options  = useSelector(({ options }) => options);
   const dispatch = useDispatch();
-
-  console.log(options)
   useEffect(() => {
     if (mapData.length !== 0) {
       dispatch(Actions.setMapData(mapData, displayField));
-      console.log(mapData);
     } else {
       dispatch(Actions.setMapData())
     }

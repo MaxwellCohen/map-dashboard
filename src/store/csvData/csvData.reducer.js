@@ -34,6 +34,7 @@ export default (state = inital_state, action) => {
         url: action.payload.url,
         rawData,
         filteredData: rawData,
+        groupData: groupData(stateKey, rawData),
         mapData: [],
         titles,
         stateKey,
@@ -42,6 +43,7 @@ export default (state = inital_state, action) => {
       return {
         ...state,
         stateKey: action.payload.stateKey,
+        groupData: groupData(action.payload.stateKey, state.filteredData),
         mapData: [],
       };
     case Actions.SET_DISPLAY:
@@ -60,8 +62,7 @@ export default (state = inital_state, action) => {
               action.payload.aggregationAction,
             )
           : processToDisplay(
-              state.filteredData,
-              state.stateKey,
+              state.groupData,
               action.payload.displayField,
               action.payload.aggregationAction,
             ),
@@ -72,13 +73,14 @@ export default (state = inital_state, action) => {
       );
       const filteringFuncitons = [...existingFilters, action.payload];
       const filteredData = filterData(state.rawData, filteringFuncitons);
+      const newGroupData = groupData(state.stateKey, filteredData);
       return {
         ...state,
         filteringFuncitons,
         filteredData,
+        groupData: newGroupData,
         mapData: processToDisplay(
-          filteredData,
-          state.stateKey,
+          newGroupData,
           state.displayField,
           state.aggregationAction,
         ),
@@ -136,17 +138,11 @@ export const filterData = (rawData, filters) => {
 };
 
 export const processToDisplay = (
-  data,
-  stateKey,
+  groupedData,
   displayField,
   aggregationAction,
 ) => {
   if (!aggregationAction || !displayField) {
-    return [];
-  }
-
-  const groupedData = groupData(stateKey, data);
-  if (groupedData.length === 0) {
     return [];
   }
 
@@ -158,13 +154,13 @@ export const processToDisplay = (
   });
 };
 
-export const updateAggregationAction = (groupedData, aggregationAction) => {
-  if (!aggregationAction || Array.isArray(groupedData)) {
+export const updateAggregationAction = (mapData, aggregationAction) => {
+  if (!aggregationAction || !Array.isArray(mapData)) {
     return [];
   }
 
   aggregationAction = camelCase(aggregationAction);
-  return groupedData.map(([key, df, calc]) => {
+  return mapData.map(([key, df, calc]) => {
     const displayVal = calc[aggregationAction]();
     return [key, displayVal, calc];
   });
