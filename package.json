@@ -42,6 +42,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "homepage": "https://maxwellcohen.github.io/map-dashboard",
   "browserslist": {
     "production": [
       ">0.2%",

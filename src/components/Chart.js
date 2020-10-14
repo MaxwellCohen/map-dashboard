@@ -6,6 +6,8 @@ import * as Actions from '../store/mapOptions/mapOptions.actions';
 import proj4 from 'proj4';
 import { useSelector, useDispatch } from 'react-redux';
 
+require('highcharts/modules/exporting')(Highcharts);
+
 highchartsMap(Highcharts);
 if (typeof window !== 'undefined') {
   window.proj4 = window.proj4 || proj4;
