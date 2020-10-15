@@ -12,7 +12,7 @@ const inital_state = {
   displayField: '',
   aggregationAction: '',
   filteringFuncitons: [],
-  mapData: [], //data grouped and agrated
+  mapData: [], //data grouped and agrated 
   loading: false,
 };
 
@@ -62,11 +62,8 @@ export default (state = inital_state, action) => {
               action.payload.aggregationAction,
             ),
       };
-    case Actions.ADD_FILTER_FN:
-      const existingFilters = state.filteringFuncitons.filter(
-        ({ name }) => name !== action.payload.name,
-      );
-      const filteringFuncitons = [...existingFilters, action.payload];
+    case Actions.ADD_FILTERS:
+      const filteringFuncitons = action.payload.filteringFuncitons;
       const filteredData = filterData(state.rawData, filteringFuncitons);
       const newGroupData = groupData(state.stateKey, filteredData);
       return {

@@ -31,7 +31,7 @@ const Grid = () => {
                onRowDataChanged={updateRows}
                 rowData={filteredData}>
                   {titles.map(v  => 
-                    <AgGridColumn key={v} field={v} sortable={true} filter={true} skipHeaderOnAutoSize={true} suppressSizeToFit={false}></AgGridColumn>
+                    <AgGridColumn key={v} field={v} sortable={true} skipHeaderOnAutoSize={true} suppressSizeToFit={false}></AgGridColumn>
                   ) }
                 
             </AgGridReact>

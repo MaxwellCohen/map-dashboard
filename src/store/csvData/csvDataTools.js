@@ -1,6 +1,7 @@
 import stateMap from '../../constants/stateMap';
 import Calculations from '../../utils/Calculations';
 import { camelCase } from 'lodash';
+import { makeFitler } from '../../utils/Filters';
 
 export const groupData = (stateKey, data) => {
   if (!stateKey) {
@@ -33,14 +34,14 @@ export const normalizeState = (state) => {
   }
   return null;
 };
-export const filterData = (rawData, filters) => {
-  if (filters.length === 0) {
+export const filterData = (rawData, filterData) => {
+  if (filterData.length === 0) {
     return rawData;
   }
-  return rawData.filter((value) => {
-    const results = filters.map(({ fn }) => fn(value)).filter(Boolean);
-    return results.length === filters.length;
-  });
+  console.log(filterData)
+  const filters = filterData.map((fd) => makeFitler(...fd)).filter(Boolean)
+  console.log(filters)
+  return rawData.filter((value) => filters.every((fn) => fn(value)));
 };
 
 export const processToDisplay = (

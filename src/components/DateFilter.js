@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import isWithinInterval from 'date-fns/isWithinInterval';
 import min from 'date-fns/min';
 import max from 'date-fns/max';
@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as Actions from '../store/csvData/csvData.actions';
 import DropDown from './DropDown';
 import DatePicker from './DatePicker';
+import { getQueryVariable } from '../utils/queryUtils';
 
 const filterDates = (field, start, end, item) => {
   const date = new Date(item[field]);
@@ -42,6 +43,18 @@ const DateFilter = () => {
   const [maxDate, setMaxDate] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  useEffect(()=> {
+    const [dFilter]  = (getQueryVariable('f')|| []);
+    if(dFilter) {
+      console.log(dFilter)
+      setDateField(dFilter[1]);
+      setStartDate(dFilter[2]);
+      setEndDate(dFilter[3]); 
+    }
+    
+  }, [titles])
+
 
   if (!titles?.length) {
     return null;
@@ -79,13 +92,8 @@ const DateFilter = () => {
   };
 
   const updateFilter = (field, minVal, maxVal) => {
-    const fn = filterDates.bind(
-      null,
-      field,
-      new Date(minVal),
-      new Date(maxVal),
-    );
-    dispatch(Actions.addFilter(fn, 'date'));
+    const f = ['dateBetween', field, minVal, maxVal];
+    dispatch(Actions.updateFilters([f]));
   };
 
   return (
@@ -105,7 +113,7 @@ const DateFilter = () => {
         />
       </div>
       {dateField ? (
-        <div style={{display:'flex', flexDirection: 'row'}}>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
           <DatePicker
             label='From'
             min={minDate}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -19,8 +19,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DropDown({ values, onChange, label, value }) {
   const classes = useStyles();
-  const [internalValue, setValue] = React.useState(value);
-  const [open, setOpen] = React.useState(false);
+  const [internalValue, setValue] = useState(value);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (internalValue !== value) {
+      setValue(value)
+    }
+  }, [value, internalValue])
 
   const handleChange = (event) => {
     setValue(event.target.value);

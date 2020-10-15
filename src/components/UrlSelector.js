@@ -1,41 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BasicTextFields from './BasicTextFields';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Actions from '../store/csvData/csvData.actions';
-
-const getQueryVariable = (variable) => {
-  var query = window.location.search.substring(1);
-  var vars = query.split('&');
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split('=');
-    if (decodeURIComponent(pair[0]) === variable) {
-      return decodeURIComponent(pair[1]);
-    }
-  }
-};
-
-const updateQuery = (key, name) => {
-  const queryParams = new URLSearchParams(window.location.search);
-  queryParams.set(key, name);
-  window.history.replaceState(null, null, '?' + queryParams.toString());
-}
-
+import { getQueryVariable, updateQuery } from '../utils/queryUtils';
 
 //'http://d14wlfuexuxgcm.cloudfront.net/covid/rt.csv'
 const UrlSelector = () => {
   const dispatch = useDispatch();
-  const [url, setUrl] = useState(getQueryVariable('url') || '');
-  const setURL = useCallback(
-    (newUrl) => {
-      if (url === newUrl){
-        return;
-      }
-      setUrl(newUrl);
-      dispatch(Actions.loadData(newUrl));
-      updateQuery('url', newUrl);
-    },
-    [setUrl, dispatch, url],
-  );
+  const loadedURL = useSelector(({ data }) => data?.url);
+  const [internalUrl, setInternalUrl] = useState(loadedURL);
 
   useEffect(() => {
     const queryURL = getQueryVariable('url');
@@ -44,11 +17,23 @@ const UrlSelector = () => {
     }
   }, [dispatch]);
 
+  useEffect(() => {
+    setInternalUrl(loadedURL);
+  }, [loadedURL]);
+
+  const setURL = (newUrl) => {
+    if (newUrl === loadedURL) {
+      return;
+    }
+    dispatch(Actions.loadData(newUrl));
+  };
+
   return (
     <div style={{ width: '100%' }}>
       <BasicTextFields
         label='Url for a CSV'
-        defaultValue={url}
+        value={internalUrl}
+        onChange={(e) => setInternalUrl(e.target.value)}
         onBlur={(e) => setURL(e.target.value)}
       />
     </div>

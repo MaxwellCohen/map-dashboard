@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import DropDown from './DropDown';
 import * as Actions from '../store/csvData/csvData.actions';
 import Calculations from '../utils/Calculations';
-import {startCase} from 'lodash'
+import {get, startCase} from 'lodash'
+import { getQueryVariable } from '../utils/queryUtils';
 
 const aggerationOptions = Object.getOwnPropertyNames(Calculations.prototype)
   .filter((k) => k !== 'constructor')
@@ -12,6 +13,19 @@ const aggerationOptions = Object.getOwnPropertyNames(Calculations.prototype)
 const DataSelector = () => {
   const { titles, stateKey, displayField, aggregationAction } = useSelector(({ data }) => data);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const urlState  = getQueryVariable('s');
+    const urlDisplayField = getQueryVariable('df')
+    const urlAggregationAction = getQueryVariable('a')
+    if (urlState !== stateKey) {
+      dispatch(Actions.groupData(stateKey));
+    }
+    if ((urlDisplayField && urlDisplayField !== displayField) || (urlAggregationAction && urlAggregationAction !== aggregationAction)) {
+      dispatch(Actions.updateDisplay(urlDisplayField, urlAggregationAction));
+    }
+  }, [titles, stateKey, displayField, aggregationAction, dispatch])
+
 
   const onStateChange = (v) => {
     dispatch(Actions.groupData(v));
