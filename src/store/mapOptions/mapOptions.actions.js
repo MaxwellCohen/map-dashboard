@@ -3,7 +3,7 @@ import { updateQuery } from '../../utils/queryUtils';
 export const SET_TITLE = 'SET_TITLE';
 export const SET_COLOR_AXIS_MIN = 'SET_COLOR_AXIS_MIN';
 export const SET_COLOR_AXIS_MAX = 'SET_COLOR_AXIS_MAX';
-export const SET_COLOR_AXIS_STOPS = 'SET_COLOR_AXIS_MAX';
+export const SET_COLOR_AXIS_STOPS = 'SET_COLOR_AXIS_STOPS';
 export const SET_MAP_DATA = 'SET_MAP_DATA';
 export const setTitle = (text) => {
   updateQuery('t', text)
@@ -32,13 +32,13 @@ export const setColorAxisMax = (max) => {
     },
   };
 };
-export const setColorAxisStops = (stops = [[]]) => {
-  stops = stops.sort((a, b) => (a[0] > b[0]) ? 1 : -1)
+export const setColorAxisStops = (stops) => {
+  stops = stops.sort((a, b) => (+a[0] > +b[0]) ? 1 : -1)
   updateQuery('st', stops)
   return {
     type: SET_COLOR_AXIS_STOPS,
     payload: {
-      stops,
+      stops: [...stops],
     },
   };
 };

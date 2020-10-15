@@ -60,7 +60,7 @@ export default (state = initial_state, action) => {
         ...state,
         colorAxis: {
           ...state.colorAxis,
-          ...action.payload,
+          stops: action.payload.stops,
         },
       };
     case Actions.SET_MAP_DATA:

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import BasicTextField from './BasicTextFields';
 import { AgGridReact, AgGridColumn } from 'ag-grid-react';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
@@ -51,7 +51,6 @@ const ChartSettings = () => {
     const s = getQueryVariable('st');
     const st = stopData.map(stopObjToArr);
     if (s && s.toString() !== st.toString() && loadedURL) {
-      console.log(s)
       dispatch(Actions.setColorAxisStops(s));
     }
   }, [stopData, loadedURL, dispatch]);
@@ -75,7 +74,10 @@ const ChartSettings = () => {
     dispatch(Actions.setColorAxisStops(data));
   };
   const deleteRow = (rowData) => {
-    const data = stopData.filter((r) => r !== rowData.data).map(stopObjToArr);
+    let rd = [];
+    rowData.api.applyTransaction({ remove: [rowData.data] })
+    rowData.api.forEachNode(node => rd.push(node.data));
+    const data = rd.map(stopObjToArr);
     dispatch(Actions.setColorAxisStops(data));
   };
 
@@ -91,9 +93,9 @@ const ChartSettings = () => {
     dispatch(Actions.setColorAxisMax(v));
   };
 
-  const DeleteButton = (data) => {
+  const DeleteButton = () => {
     return (
-      <Button style={{ width: '100%' }} onClick={() => deleteRow(data)}>
+      <Button style={{ width: '100%' }} >
         Delete
       </Button>
     );
@@ -164,6 +166,7 @@ const ChartSettings = () => {
             <AgGridColumn
               headerName='Delete'
               cellRenderer='deleteButton'
+              onCellClicked={deleteRow}
               editable={false}></AgGridColumn>
           </AgGridReact>
         </div>
