@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import BasicTextField from './BasicTextFields';
+import React, { useState, useEffect } from 'react';
+import BasicTextField from '../common/BasicTextFields';
 import { AgGridReact, AgGridColumn } from 'ag-grid-react';
-import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
-import NumericEditor from './NumericEditor';
-import ColorEditor from './ColorEditor';
-import * as Actions from '../store/mapOptions/mapOptions.actions';
+import NumericEditor from '../cellEditors/NumericEditor';
+import ColorEditor from '../cellEditors/ColorEditor';
+import * as Actions from '../../store/mapOptions/mapOptions.actions';
 import { useSelector, useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { getQueryVariable } from '../utils/queryUtils';
+import { getQueryVariable } from '../../utils/queryUtils';
+import useChartSettings, {stopObjToArr} from './useChartSettings';
 
-function stopObjToArr({ stop, color }) {
-  return [stop, color];
-}
 
 const ChartSettings = () => {
   const [gridApi, setGridApi] = useState(null);
@@ -28,6 +25,9 @@ const ChartSettings = () => {
       _id: i + stop + color,
     })),
   );
+
+  const [onCellValueChanged, addStop, deleteRow, setTitleHandle, setMinHandle, setMaxHandle] = useChartSettings();
+
 
   useEffect(() => {
     const mi = getQueryVariable('mi');
@@ -62,36 +62,6 @@ const ChartSettings = () => {
     setGridColumnApi(params.columnApi);
   }
 
-  const onCellValueChanged = (prams) => {
-    const cloneStopData = stopData.map((e) => ({ ...e }));
-    cloneStopData[prams.rowIndex] = { ...prams.data };
-    const data = cloneStopData.map(stopObjToArr);
-    dispatch(Actions.setColorAxisStops(data));
-  };
-
-  const addStop = () => {
-    const data = [...stopData.map(stopObjToArr), [0, '#000']];
-    dispatch(Actions.setColorAxisStops(data));
-  };
-  const deleteRow = (rowData) => {
-    let rd = [];
-    rowData.api.applyTransaction({ remove: [rowData.data] })
-    rowData.api.forEachNode(node => rd.push(node.data));
-    const data = rd.map(stopObjToArr);
-    dispatch(Actions.setColorAxisStops(data));
-  };
-
-  const setTitleHandle = (v) => {
-    dispatch(Actions.setTitle(v));
-  };
-
-  const setMinHandle = (v) => {
-    dispatch(Actions.setColorAxisMin(v));
-  };
-
-  const setMaxHandle = (v) => {
-    dispatch(Actions.setColorAxisMax(v));
-  };
 
   const DeleteButton = () => {
     return (
@@ -133,7 +103,6 @@ const ChartSettings = () => {
               editable: true,
             }}
             onGridReady={onGridReady}
-            modules={[ClientSideRowModelModule]}
             onCellValueChanged={onCellValueChanged}
             singleClickEdit={true}
             frameworkComponents={{

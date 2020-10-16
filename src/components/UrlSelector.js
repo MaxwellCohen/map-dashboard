@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import BasicTextFields from './BasicTextFields';
+import BasicTextFields from './common/BasicTextFields';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Actions from '../store/csvData/csvData.actions';
 import { getQueryVariable } from '../utils/queryUtils';
@@ -9,7 +9,10 @@ const UrlSelector = () => {
   const dispatch = useDispatch();
   const loadedURL = useSelector(({ data }) => data?.url);
   const [internalUrl, setInternalUrl] = useState(loadedURL);
-
+  useEffect(() => {
+    setInternalUrl(loadedURL);
+  }, [loadedURL]);
+  
   useEffect(() => {
     const queryURL = getQueryVariable('url');
     if (queryURL) {
@@ -17,9 +20,7 @@ const UrlSelector = () => {
     }
   }, [dispatch]);
 
-  useEffect(() => {
-    setInternalUrl(loadedURL);
-  }, [loadedURL]);
+
 
   const setURL = (newUrl) => {
     if (newUrl === loadedURL) {

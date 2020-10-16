@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import DropDown from './DropDown';
+import DropDown from './common/DropDown';
 import * as Actions from '../store/csvData/csvData.actions';
 import Calculations from '../utils/Calculations';
 import { startCase } from 'lodash';

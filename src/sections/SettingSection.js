@@ -1,6 +1,6 @@
 import React from 'react';
 import DataSelector from '../components/DataSelector';
-import DateFilter from '../components/DateFilter';
+import FilterList from '../components/fitlers/FilterList';
 import UrlSelector from '../components/UrlSelector';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,7 +8,7 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
-import ChartSettings from '../components/ChartSettings';
+import ChartSettings from '../components/chartSettings/ChartSettings';
 import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
@@ -50,12 +50,12 @@ const ChartSettingsAccordion = () => {
 const FiltersAccordion = () => {
   const classes = useStyles();
   return (
-    <Accordion>
-      <AccordionSummary aria-controls='panel2a-content' id='panel3a-header'>
+    <Accordion defaultExpanded={true}>
+      <AccordionSummary aria-controls='panel2a-content' id='panel3a-header' >
         <Typography className={classes.heading}>Filters</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <DateFilter />
+        <FilterList />
       </AccordionDetails>
     </Accordion>
   );
@@ -63,7 +63,7 @@ const FiltersAccordion = () => {
 const AggregationSettingsAccordion = () => {
   const classes = useStyles();
   return (
-    <Accordion>
+    <Accordion defaultExpanded={true}>
       <AccordionSummary aria-controls='panel3a-content' id='panel3a-header'>
         <Typography className={classes.heading}>
           Aggregation Settings
@@ -79,7 +79,6 @@ const AggregationSettingsAccordion = () => {
 const SettingSection = () => {
   const { loading, titles } = useSelector(({ data }) => data);
 
-  console.log(titles.length)
   return (
     <div
       style={{
@@ -89,7 +88,7 @@ const SettingSection = () => {
         overflow: 'scroll',
       }}>
       <DataSourceAccordion />
-      {loading ? 'loading' : null}
+      {loading ? 'loading...' : null}
       {!loading && titles.length ? <ChartSettingsAccordion /> : null}
       {titles.length ? (
         <>

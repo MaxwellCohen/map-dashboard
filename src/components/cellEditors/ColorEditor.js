@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 import { SketchPicker } from 'react-color'
 
-import './ColorEditor.css';
 const ColorEditor = forwardRef((props, ref) => {
   const [value, setValue] = useState(props.value);
   const refInput = useRef(null);

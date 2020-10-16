@@ -7,7 +7,7 @@ export const getQueryVariable = (variable) => {
     const pair = vars[i].split('=');
     if (decodeURIComponent(pair[0]) === variable) {
       let val = decodeURIComponent(pair[1]);
-      if (val.includes(DELEM)) {
+      if (val.includes(DELEM) || val.includes(',')) {
         val = val.split(DELEM).map((v) => v.split(','))
       }
       return val

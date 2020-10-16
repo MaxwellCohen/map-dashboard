@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 export default function DatePickers(props) {
   const classes = useStyles();
   return (
-    <div >
+    < >
       <TextField
         labelid={'date-picker-' +props.label }
         type="date"
@@ -28,6 +28,6 @@ export default function DatePickers(props) {
         InputProps={{ inputProps: { ...props } }}
         {...props}
       />
-    </div>
+    </>
   );
 }

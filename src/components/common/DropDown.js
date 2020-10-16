@@ -4,6 +4,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import { startCase } from 'lodash'
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -40,9 +41,9 @@ export default function DropDown({ values, onChange, label, value }) {
   const handleOpen = () => {
     setOpen(true);
   };
-
+//style={{width: '100%'}}
   return (
-    <div style={{width: '100%'}}>
+    <>
       <FormControl className={classes.formControl} >
         <InputLabel id='demo-controlled-open-select-label'>{label}</InputLabel>
         <Select
@@ -58,10 +59,10 @@ export default function DropDown({ values, onChange, label, value }) {
             <em>None</em>
           </MenuItem>
           {values.map((v) => (
-            <MenuItem value={v} key={v}>{v}</MenuItem>
+            <MenuItem value={v} key={v}>{startCase(v)}</MenuItem>
           ))}
         </Select>
       </FormControl>
-    </div>
+    </>
   );
 }

@@ -38,10 +38,11 @@ export const filterData = (rawData, filterData) => {
   if (filterData.length === 0) {
     return rawData;
   }
-  console.log(filterData)
   const filters = filterData.map((fd) => makeFitler(...fd)).filter(Boolean)
-  console.log(filters)
-  return rawData.filter((value) => filters.every((fn) => fn(value)));
+  return rawData.filter((value) => {
+    const result =  filters.every((fn) => fn(value));
+    return result;
+  });
 };
 
 export const processToDisplay = (
