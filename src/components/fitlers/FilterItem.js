@@ -1,12 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import DropDown from '../common/DropDown';
+import DatesFilter from './DatesFilter';
 import DateFilter from './DateFilter';
-import SingleValue from './SingleValue';
+import SingleValueFilter from './SingleValueFilter';
 import DeleteOutlineRoundedIcon from '@material-ui/icons/DeleteOutlineRounded';
 import { Button } from '@material-ui/core';
+import { filterObject } from '../../utils/Filters';
+const filterOptions = Object.keys(filterObject);
 
-const filterOptions = ['dateBetween', 'equals', 'greater', 'less'];
+const displayfilterOptions = (
+  dataField,
+  filterType,
+  filterValues,
+  setDataField,
+  onFilterValueChange,
+) => {
+  if (!dataField) {
+    return null;
+  }
+  switch (filterType) {
+    case 'dateBetween':
+      return (
+        <DatesFilter
+          dataField={dataField}
+          filterValues={filterValues}
+          onDataFieldChange={setDataField}
+          onFilterValueChange={onFilterValueChange}
+        />
+      );
+    case 'equals':
+    case 'greater':
+    case 'less':
+      return (
+        <div style={{ margin: '0px 8px 0 15px ', flex: 1 }}>
+          <SingleValueFilter
+            filterValues={filterValues}
+            onFilterValueChange={onFilterValueChange}
+          />
+        </div>
+      );
+    case 'dayOf':
+    case 'dateAfter':
+    case 'dateBefore':
+      return (
+        <div style={{ margin: '0px 8px 0 15px ', flex: 1 }}>
+          <DateFilter
+            filterValues={filterValues}
+            onFilterValueChange={onFilterValueChange}
+          />
+        </div>
+      );
+    default:
+      return null;
+  }
+};
 
 const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
   const { titles } = useSelector(({ data }) => data);
@@ -40,37 +88,6 @@ const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
     }
   };
 
-  const displayfilterOptions = () => {
-    if (!dataField) {
-      return null;
-    }
-    switch (filterType) {
-      case 'dateBetween':
-        return (
-          <DateFilter
-            dataField={dataField}
-            filterValues={filterValues}
-            onDataFieldChange={setDataField}
-            onFilterValueChange={onFilterValueChange}
-          />
-        );
-      case 'equals':
-      case 'greater':
-      case 'less':
-        return (
-        <div style={{margin: '0px 8px 0 15px ', flex: 1,
-        }}>
-          <SingleValue
-            filterValues={filterValues}
-            onFilterValueChange={onFilterValueChange}
-          />
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <div
       style={{
@@ -85,7 +102,7 @@ const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
           display: 'flex',
           flexDirection: 'row',
           flex: 1,
-          marginRight:8
+          marginRight: 8,
         }}>
         <div>
           <DropDown
@@ -104,12 +121,21 @@ const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
           />
         </div>
       </div>
-        <div style={{
+      <div
+        style={{
           display: 'flex',
           flexDirection: 'row',
           flex: 2,
           flexGrow: 2,
-        }}>{displayfilterOptions()}</div>
+        }}>
+        {displayfilterOptions(
+          dataField,
+          filterType,
+          filterValues,
+          setDataField,
+          onFilterValueChange,
+        )}
+      </div>
       <div
         style={{
           display: 'flex',

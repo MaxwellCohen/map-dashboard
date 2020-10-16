@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import BasicTextFields from '../common/BasicTextFields';
 
-const SingleValue = ({ filterValues: [value = ''], onFilterValueChange }) => {
+const SingleValueFilter = ({ filterValues: [value = ''], onFilterValueChange }) => {
   const [internalUrl, setInternalUrl] = useState(value);
   useEffect(() => {
-    console.log(value)
     setInternalUrl(value);
   }, [value]);
 
@@ -12,6 +11,7 @@ const SingleValue = ({ filterValues: [value = ''], onFilterValueChange }) => {
     if (newValue === value) {
       return;
     }
+    setInternalUrl(value);
     onFilterValueChange([newValue]);
   };
 
@@ -19,10 +19,9 @@ const SingleValue = ({ filterValues: [value = ''], onFilterValueChange }) => {
     <BasicTextFields
       label='value'
       value={internalUrl}
-      onChange={(e) => setInternalUrl(e.target.value)}
-      onBlur={(e) => setValue(e.target.value)}
+      onChange={(e) => setValue(e.target.value)}
     />
   );
 };
 
-export default SingleValue;
+export default SingleValueFilter;
