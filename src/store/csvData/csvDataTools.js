@@ -75,14 +75,16 @@ export const updateAggregationAction = (mapData, aggregationAction) => {
 };
 
 export const convertCSVToJSON = (str = '', delimiter = ',') => {
-  const titles = str.slice(0, str.indexOf('\n')).split(delimiter);
+  const titles = str.slice(0, str.indexOf('\n')).split(delimiter).map(str => str.replace(/^"(.+(?="$))"$/, '$1') );
   const rows = str.slice(str.indexOf('\n') + 1).split('\n');
   return [
     titles,
     rows.map((row) => {
       const values = row.split(delimiter);
       return titles.reduce((object, curr, i) => {
-        object[curr] = values[i];
+        if(values[i]) {
+          object[curr] = values[i].replace(/^"(.+(?="$))"$/, '$1');
+        }
         return object;
       }, {});
     }),

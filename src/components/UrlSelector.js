@@ -32,7 +32,7 @@ const UrlSelector = () => {
   return (
     <div style={{ width: '100%' }}>
       <BasicTextFields
-        label='Url for a CSV'
+        label='CSV Url'
         value={internalUrl}
         onChange={(e) => setInternalUrl(e.target.value)}
         onBlur={(e) => setURL(e.target.value)}
