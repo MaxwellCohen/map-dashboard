@@ -8,17 +8,16 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 
 const Grid = () => {
     const [gridApi, setGridApi] = useState(null);
-    const [gridColumnApi, setGridColumnApi] = useState(null);
+    // const [gridColumnApi, setGridColumnApi] = useState(null);
     const { filteredData,   titles} = useSelector(({ data }) => data);
     const onGridReady = (params) => {
       setGridApi(params.api);
-      setGridColumnApi(params.columnApi);
+      // setGridColumnApi(params.columnApi);
       
     }
 
     const updateRows =() => {
       if (gridApi) {
-
         gridApi.sizeColumnsToFit();
       }
     }

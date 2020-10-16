@@ -2,9 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import min from 'date-fns/min';
 import max from 'date-fns/max';
 import format from 'date-fns/format';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import DatePicker from '../common/DatePicker';
-import { conforms } from 'lodash';
+
 
 const dateArr = (data, field) => {
   return data.map((d) => new Date(d[field])).filter((v) => !isNaN(v.getTime()));

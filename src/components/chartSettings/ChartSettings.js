@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import BasicTextField from '../common/BasicTextFields';
 import { AgGridReact, AgGridColumn } from 'ag-grid-react';
 import NumericEditor from '../cellEditors/NumericEditor';
@@ -11,8 +11,8 @@ import useChartSettings, {stopObjToArr} from './useChartSettings';
 
 
 const ChartSettings = () => {
-  const [gridApi, setGridApi] = useState(null);
-  const [gridColumnApi, setGridColumnApi] = useState(null);
+  // const [gridApi, setGridApi] = useState(null);
+  // const [gridColumnApi, setGridColumnApi] = useState(null);
   const dispatch = useDispatch();
   const loadedURL = useSelector(({ data }) => data?.url);
   const chartTitle = useSelector(({ options }) => options.title.text);
@@ -58,8 +58,8 @@ const ChartSettings = () => {
 
 
   function onGridReady(params) {
-    setGridApi(params.api);
-    setGridColumnApi(params.columnApi);
+    // setGridApi(params.api);
+    // setGridColumnApi(params.columnApi);
   }
 
 

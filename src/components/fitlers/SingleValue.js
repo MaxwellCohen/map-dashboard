@@ -9,7 +9,6 @@ const SingleValue = ({ filterValues: [value = ''], onFilterValueChange }) => {
   }, [value]);
 
   const setValue = (newValue) => {
-    console.log('hi', newValue, value)
     if (newValue === value) {
       return;
     }
@@ -17,7 +16,6 @@ const SingleValue = ({ filterValues: [value = ''], onFilterValueChange }) => {
   };
 
   return (
-    
     <BasicTextFields
       label='value'
       value={internalUrl}
