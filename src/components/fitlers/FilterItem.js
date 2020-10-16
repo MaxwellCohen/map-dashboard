@@ -92,7 +92,7 @@ const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
             value={filterType}
             values={filterOptions}
             onChange={filterTypeChangeHandler}
-            label='Filter type'
+            label='Type'
           />
         </div>
         <div>
@@ -100,7 +100,7 @@ const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
             value={dataField}
             values={titles}
             onChange={dataFieldChangeHandler}
-            label='Data Field'
+            label='Field'
           />
         </div>
       </div>
