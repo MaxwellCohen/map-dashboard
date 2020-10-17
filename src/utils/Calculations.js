@@ -8,8 +8,8 @@ export default class Calculations {
   }
 
   average() {
-    if (this.countOfNumbers()) {
-      return this.sum() / this.countOfNumbers();
+    if (this.count()) {
+      return this.sum() / this.count();
     }
   }
 
