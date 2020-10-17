@@ -4,6 +4,7 @@ import max from 'date-fns/max';
 import format from 'date-fns/format';
 import { useSelector } from 'react-redux';
 import DatePicker from '../common/DatePicker';
+import {addDays, subDays} from 'date-fns'
 
 
 const dateArr = (data, field) => {
@@ -12,11 +13,11 @@ const dateArr = (data, field) => {
 
 const calcMin = (data, field) => {
   const arr = dateArr(data, field);
-  return dateFormat(min(arr));
+  return dateFormat(subDays(min(arr), 1));
 };
 const calcMax = (data, field) => {
   const arr = dateArr(data, field);
-  return dateFormat(max(arr));
+  return dateFormat(addDays(max(arr), 1));
 };
 
 const dateFormat = (date) => {
