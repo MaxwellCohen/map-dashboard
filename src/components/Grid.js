@@ -26,20 +26,23 @@ function useDragColumnChange(cb) {
 
 const Grid = () => {
   const [gridApi, setGridApi] = useState(null);
-  const { onDragStarted, onDragStopped } = useDragColumnChange((e) =>
-    console.log('Saving new column order!'),
-  );
-  // const [gridColumnApi, setGridColumnApi] = useState(null);
+  const { onDragStarted, onDragStopped } = useDragColumnChange((e) => {});
+  const [gridColumnApi, setGridColumnApi] = useState(null);
   const { filteredData, titles } = useSelector(({ data }) => data);
   const onGridReady = (params) => {
     setGridApi(params.api);
-    // setGridColumnApi(params.columnApi);
+    setGridColumnApi(params.columnApi);
   };
 
   const updateRows = () => {
     if (gridApi) {
-      gridApi.sizeColumnsToFit();
-      console.log(gridApi);
+      // gridApi.autoSizeColumns()();
+
+      var allColumnIds = [];
+      gridColumnApi.getAllColumns().forEach(function (column) {
+        allColumnIds.push(column.colId);
+      });
+      gridColumnApi.autoSizeColumns(allColumnIds, false);
     }
   };
 
