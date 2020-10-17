@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import { AgGridReact } from 'ag-grid-react';
 import { useSelector } from 'react-redux';
 
 import 'ag-grid-community/dist/styles/ag-grid.css';
