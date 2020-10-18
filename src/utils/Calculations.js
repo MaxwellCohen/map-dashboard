@@ -54,6 +54,13 @@ export default class Calculations {
     if (this.count === 1) {
       return `${this.sum.toFixed(2)}`
     }
-    return `Count: ${this.count} <br> Min: ${this.min.toFixed(2)} <br> Max: ${this.max.toFixed(2)} <br> Sum: ${this.sum.toFixed(2)} <br> Average: ${this.average.toFixed(2)}`
+    return `
+    <br>Average: ${this.average.toFixed(2)}
+    <br>Count: ${this.count} 
+    <br>Sum: ${this.sum.toFixed(2)}
+    <br>Min: ${this.min.toFixed(2)}
+    <br>Max: ${this.max.toFixed(2)}
+    <br>Range: ${this.range.toFixed(2)}
+    `
   }
 }

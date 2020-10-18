@@ -103,8 +103,10 @@ export const processToDisplay = (
   
 };
 
+export const strCleanup = str => str.replace(/^"(.+(?="$))"$/, '$1')
+
 export const convertCSVToJSON = (str = '', delimiter = ',') => {
-  const titles = str.slice(0, str.indexOf('\n')).split(delimiter).map(str => str.replace(/^"(.+(?="$))"$/, '$1') );
+  const titles = str.slice(0, str.indexOf('\n')).split(delimiter).map(strCleanup);
   const rows = str.slice(str.indexOf('\n') + 1).split('\n');
   return [
     titles,
@@ -112,7 +114,7 @@ export const convertCSVToJSON = (str = '', delimiter = ',') => {
       const values = row.split(delimiter);
       return titles.reduce((object, curr, i) => {
         if(values[i]) {
-          object[curr] = values[i].replace(/^"(.+(?="$))"$/, '$1');
+          object[curr] = strCleanup(values[i])
         }
         return object;
       }, {});
