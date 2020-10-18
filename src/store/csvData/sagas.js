@@ -1,5 +1,5 @@
 import { getCSV } from '../../api/api';
-import { call, put, takeLatest, all, select, fork } from 'redux-saga/effects';
+import { call, put, takeLatest, all, select } from 'redux-saga/effects';
 import * as Actions from './csvData.actions';
 import {
   groupData as gd,
