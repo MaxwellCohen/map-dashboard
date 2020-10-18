@@ -1,5 +1,12 @@
 import { getCSV } from '../../api/api';
-import { call, put, takeLatest, all, select, takeEvery } from 'redux-saga/effects';
+import {
+  call,
+  put,
+  takeLatest,
+  all,
+  select,
+  takeEvery,
+} from 'redux-saga/effects';
 import * as Actions from './csvData.actions';
 import {
   groupData as gd,
@@ -24,15 +31,18 @@ function* fetchData(action) {
       yield put({ type: Actions.LOAD_DATA_SUCCESS, payload: {} });
     }
 
-    const displayField = getQueryVariable('df') || '';
-    const aggregationAction = getQueryVariable('a') || '';
-    const filteringFuncitons = getQueryVariable('f') || [];
+    let {
+      df: displayField = '',
+      a: aggregationAction = '',
+      f: filteringFuncitons = [],
+      s: stateKey = '',
+    } = getQueryVariable();
 
     updateQuery('url', url);
     const { data: apiData } = yield call(getCSV, url);
     const [titles, rawData] = yield call(convertCSVToJSON, apiData);
-    const stateKey =
-      getQueryVariable('s') ||
+    stateKey =
+      stateKey ||
       titles.find((t) => normalizeState(stateMap, (rawData[0] || {})[t])) ||
       '';
 
@@ -48,7 +58,6 @@ function* fetchData(action) {
       groupData,
     );
 
-    
     yield put({
       type: Actions.LOAD_DATA_SUCCESS,
       payload: {
@@ -96,7 +105,7 @@ function* updateFilters(action) {
       state.aggregationAction,
       groupData,
     );
-    
+
     yield put({
       type: Actions.ADD_FILTERS,
       payload: {
@@ -127,7 +136,7 @@ function* groupDataSaga(action) {
       state.aggregationAction,
       groupData,
     );
-    
+
     yield put({
       type: Actions.SET_STATE_AND_GROUP,
       payload: {
@@ -154,7 +163,6 @@ function* setDisplay(action) {
       state.mapData,
     );
 
-    
     yield put({
       type: Actions.SET_DISPLAY,
       payload: {

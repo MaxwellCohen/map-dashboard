@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import BasicTextFields from './common/BasicTextFields';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Actions from '../store/csvData/csvData.actions';
-import { getQueryVariable, clearQuery } from '../utils/queryUtils';
+import { getQueryVariable, clearQueryUrl } from '../utils/queryUtils';
 
 //'http://d14wlfuexuxgcm.cloudfront.net/covid/rt.csv'
 const UrlSelector = () => {
@@ -17,7 +17,7 @@ const UrlSelector = () => {
 
   const urlChangeHandler = (v) => {
     setInternalUrl(v);
-    clearQuery();
+    clearQueryUrl();
     dispatch(Actions.loadData(''));
   } 
   
