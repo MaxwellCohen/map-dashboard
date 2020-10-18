@@ -20,54 +20,27 @@ const inital_state = {
 export default (state = inital_state, {type, payload}) => {
   switch (type) {
     case Actions.REQUEST_DATA:
-      return {
-        ...inital_state,
-        loading: true,
-      };
+      return updateState( inital_state, {}, true);
     case Actions.LOAD_DATA_SUCCESS:
-      return {
-        ...inital_state,
-        loading: false,
-        ...payload
-      };
+      return updateState( inital_state, payload, false);
     case Actions.LOAD_DATA_FAILURE: 
-    return {
-      ...inital_state,
-      loading: false
-    };
+      return updateState( inital_state, {}, false);
     case Actions.SET_STATE_AND_GROUP:
-      return {
-        ...state,
-        stateKey: payload.stateKey,
-        groupData: groupData(state.stateMap, payload.stateKey, state.filteredData),
-        mapData: [],
-      };
+      return updateState( state, payload);
     case Actions.SET_DISPLAY:
-      return {
-        ...state,
-        displayField: payload.displayField,
-        aggregationAction: payload.aggregationAction,
-        mapData: processToDisplay(
-          payload.displayField,
-          state.displayField,
-          payload.aggregationAction,
-          state.groupData, state.mapData),
-      };
+      return updateState( state, payload);
     case Actions.ADD_FILTERS:
-      const filteringFuncitons = payload.filteringFuncitons;
-      const filteredData = filterData(state.rawData, filteringFuncitons);
-      const newGroupData = groupData(state.stateMap, state.stateKey, filteredData);
-      const mapData = processToDisplay(state.displayField, state.displayField, state.aggregationAction, newGroupData);
-      return {
-        ...state,
-        filteringFuncitons,
-        filteredData,
-        groupData: newGroupData,
-        mapData
-      };
+      return updateState( state, payload);
     default:
       return state;
   }
 };
 
 
+const updateState = (is={}, p={}, loading=false) => {
+  return {
+    ...is,
+    ...p,
+    loading,
+  }
+}

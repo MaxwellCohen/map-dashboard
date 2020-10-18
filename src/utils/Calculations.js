@@ -2,14 +2,21 @@ export default class Calculations {
   constructor(arr, key) {
     this.arr = arr;
     this.key = key;
-    this.numberData = arr
+  }
+
+  get _numberData() {
+    if (this.__numberData) {
+      return this.__numberData;
+    }
+    this.__numberData = this.arr
       .map((a) => parseFloat(a[this.key]))
       .filter((a) => !isNaN(a));
+    return this.__numberData;
   }
 
   get average() {
     if (!this.count) {
-      return 0
+      return 0;
     }
     return this.sum / this.count;
   }
@@ -19,14 +26,14 @@ export default class Calculations {
   }
 
   get countOfNumbers() {
-    return this.numberData.length;
+    return this._numberData.length;
   }
 
   get max() {
     if (this._max !== undefined) {
       return this._max;
     }
-    this._max = Math.max(...this.numberData);
+    this._max = Math.max(...this._numberData);
     return this._max;
   }
 
@@ -34,7 +41,7 @@ export default class Calculations {
     if (this._min !== undefined) {
       return this._min;
     }
-    this._min = Math.min(...this.numberData);
+    this._min = Math.min(...this._numberData);
     return this._min;
   }
 
@@ -42,7 +49,7 @@ export default class Calculations {
     if (this._sum !== undefined) {
       return this._sum;
     }
-    this._sum = this.numberData.reduce((a, b) => a + b, 0);
+    this._sum = this._numberData.reduce((a, b) => a + b, 0);
     return this._sum;
   }
 
@@ -51,9 +58,6 @@ export default class Calculations {
   }
 
   _display() {
-    if (this.count === 1) {
-      return `${this.sum.toFixed(2)}`
-    }
     return `
     <br>Average: ${this.average.toFixed(2)}
     <br>Count: ${this.count} 
@@ -61,6 +65,6 @@ export default class Calculations {
     <br>Min: ${this.min.toFixed(2)}
     <br>Max: ${this.max.toFixed(2)}
     <br>Range: ${this.range.toFixed(2)}
-    `
+    `;
   }
 }

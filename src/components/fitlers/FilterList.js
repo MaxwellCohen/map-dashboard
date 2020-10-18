@@ -1,28 +1,18 @@
 import { Button } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getQueryVariable } from '../../utils/queryUtils';
 import FilterItem from './FilterItem';
 import * as Actions from '../../store/csvData/csvData.actions';
 
 
 const FilterList = () => {
-  const { titles, filteringFuncitons } = useSelector(({ data }) => data);
+  const { filteringFuncitons } = useSelector(({ data }) => data);
   const [internalFilters, setInternalFilters] = useState(filteringFuncitons);
   const dispach = useDispatch();
 
   useEffect(() => {
     setInternalFilters(filteringFuncitons)
   }, [filteringFuncitons])
-
-  useEffect(()=> {
-    const urlFilters  = (getQueryVariable('f')|| []);
-    if (urlFilters.length > 0 && urlFilters.toString() !== filteringFuncitons.toString()) {
-      dispach(Actions.updateFilters(urlFilters));
-    }
-    setInternalFilters(urlFilters)
-  }, [titles, dispach, filteringFuncitons])
-
 
   const addFitler = () => {
     setInternalFilters((c) => [...c, []]);

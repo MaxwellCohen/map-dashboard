@@ -40,9 +40,6 @@ export const groupData = (stateMap, stateKey, data) => {
     return [];
   }
   const obj = data.reduce((acc, item) => {
-    if (!item[stateKey]) {
-      return acc;
-    }
     const key = normalizeState(stateMap, item[stateKey]);
     if (!key) {
       return acc;
@@ -63,15 +60,16 @@ export const normalizeState = (stateMap, state) => {
     return null;
   }
 };
+
 export const filterData = (rawData, filterData) => {
   if (filterData.length === 0) {
     return rawData;
   }
   const filters = filterData.map((fd) => makeFitler(...fd)).filter(Boolean)
-  return rawData.filter((value) => {
-    const result =  filters.every((fn) => fn(value));
-    return result;
-  });
+  if (filters.length === 0) {
+    return rawData;
+  }
+  return rawData.filter((value) => filters.every((fn) => fn(value)));
 };
 
 export const processToDisplay = (
@@ -89,16 +87,12 @@ export const processToDisplay = (
 
   if (mapData.length && displayField === oldDisplayField) {
     // update only
-    return mapData.map(([key, df, calc]) => {
-      const displayVal = calc[aggregationAction];
-      return [key, displayVal, calc];
-    });
+    return mapData.map(([key, odv, calc]) => [key, calc[aggregationAction], calc]);
   } 
 
   return groupedData.map(([key, arr]) => {
     const calc = new Calculations(arr, displayField);
-    const displayVal = calc[aggregationAction];
-    return [key, displayVal, calc];
+    return [key, calc[aggregationAction], calc];
   });
   
 };

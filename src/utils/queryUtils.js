@@ -19,9 +19,11 @@ export const updateQuery = (key, value) => {
   if (Array.isArray(value)) {
     value = value.join(DELEM);
   }
-
-
   const queryParams = new URLSearchParams(window.location.search);
   queryParams.set(key, value);
   window.history.replaceState(null, null, '?' + queryParams.toString());
+}
+
+export const clearQuery = () => {
+  window.history.replaceState(null, null, '?' );
 }
