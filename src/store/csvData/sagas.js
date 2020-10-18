@@ -39,11 +39,23 @@ function* fetchData(action) {
     } = getQueryVariable();
 
     updateQuery('url', url);
+
+    yield put({
+      type: Actions.UPDATE_DISPLAY_VALUES,
+      payload: {
+        url,
+        displayField,
+        aggregationAction,
+        filteringFuncitons,
+        stateKey,
+      },
+    });
+
     const { data: apiData } = yield call(getCSV, url);
     const [titles, rawData] = yield call(convertCSVToJSON, apiData);
     stateKey =
       stateKey ||
-      titles.find((t) => normalizeState(stateMap, (rawData[0] || {})[t])) ||
+      titles.find((t) => normalizeState(stateMap, (rawData[0])[t])) ||
       '';
 
     const filteredData = yield call(filterData, rawData, filteringFuncitons);
@@ -53,7 +65,6 @@ function* fetchData(action) {
     const mapData = yield call(
       processToDisplay,
       displayField,
-      null,
       aggregationAction,
       groupData,
     );
@@ -63,13 +74,12 @@ function* fetchData(action) {
       payload: {
         url,
         titles,
+        displayField,
         rawData,
         filteredData,
-        displayField,
         filteringFuncitons,
         aggregationAction,
-        groupData,
-        mapData,
+        groupData: mapData,
         stateKey,
         stateMap,
       },
@@ -82,11 +92,13 @@ function* fetchData(action) {
 function* updateFilters(action) {
   try {
     const filteringFuncitons = action.payload.filteringFuncitons;
-    updateQuery('f', filteringFuncitons);
+
     const state = yield select(getData);
     if (state.filteringFuncitons.toString() === filteringFuncitons.toString()) {
       return;
     }
+    updateQuery('f', filteringFuncitons);
+    yield put({type: Actions.UPDATE_DISPLAY_VALUES, payload: {filteringFuncitons}});
     const filteredData = yield call(
       filterData,
       state.rawData,
@@ -101,7 +113,6 @@ function* updateFilters(action) {
     const mapData = yield call(
       processToDisplay,
       state.displayField,
-      state.displayField,
       state.aggregationAction,
       groupData,
     );
@@ -111,8 +122,7 @@ function* updateFilters(action) {
       payload: {
         filteringFuncitons,
         filteredData,
-        groupData,
-        mapData,
+        groupData: mapData,
       },
     });
   } catch {}
@@ -121,8 +131,15 @@ function* updateFilters(action) {
 function* groupDataSaga(action) {
   try {
     const stateKey = action.payload.stateKey;
-    updateQuery('s', stateKey);
     const state = yield select(getData);
+    updateQuery('s', stateKey);
+    yield put({
+      type: Actions.UPDATE_DISPLAY_VALUES,
+      payload: {
+        stateKey,
+      },
+    });
+
     const groupData = yield call(
       gd,
       state.stateMap,
@@ -132,7 +149,6 @@ function* groupDataSaga(action) {
     const mapData = yield call(
       processToDisplay,
       state.displayField,
-      state.displayField,
       state.aggregationAction,
       groupData,
     );
@@ -141,8 +157,7 @@ function* groupDataSaga(action) {
       type: Actions.SET_STATE_AND_GROUP,
       payload: {
         stateKey,
-        groupData,
-        mapData,
+        groupData: mapData,
       },
     });
   } catch {}
@@ -154,13 +169,20 @@ function* setDisplay(action) {
     yield call(updateQuery, 'df', displayField);
     yield call(updateQuery, 'a', aggregationAction);
     const state = yield select(getData);
-    const mapData = yield call(
+
+    yield put({
+      type: Actions.UPDATE_DISPLAY_VALUES,
+      payload: {
+        displayField,
+        aggregationAction,
+      },
+    });
+
+    const groupData = yield call(
       processToDisplay,
       displayField,
-      state.displayField,
       aggregationAction,
       state.groupData,
-      state.mapData,
     );
 
     yield put({
@@ -168,7 +190,7 @@ function* setDisplay(action) {
       payload: {
         displayField,
         aggregationAction,
-        mapData,
+        groupData,
       },
     });
   } catch {}
@@ -178,7 +200,7 @@ function* mySaga() {
   yield all([
     takeLatest(Actions.LOAD_DATA_SAGA, fetchData),
     takeEvery(Actions.SET_DISPLAY_SAGA, setDisplay),
-    takeEvery(Actions.ADD_FILTERS_SAGA, updateFilters),
+    takeEvery(Actions.APPLY_FILTERS_SAGA, updateFilters),
     takeEvery(Actions.SET_STATE_AND_GROUP_SAGA, groupDataSaga),
   ]);
 }

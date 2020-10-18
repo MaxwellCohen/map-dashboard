@@ -45,9 +45,9 @@ export const groupData = (stateMap, stateKey, data) => {
       return acc;
     }
     if (!acc[key]) {
-      acc[key] = [key, []];
+      acc[key] = [key,null, new Calculations()];
     }
-    acc[key][1].push(item);
+    acc[key][2]._addValue(item);
     return acc;
   }, {});
   return Object.values(obj);
@@ -74,10 +74,8 @@ export const filterData = (rawData, filterData) => {
 
 export const processToDisplay = (
   displayField,
-  oldDisplayField,
   aggregationAction,
   groupedData,
-  mapData = [],
 ) => {
   // do not display if there is no display field or aggregationAction
   if (!aggregationAction || !displayField) {
@@ -85,13 +83,8 @@ export const processToDisplay = (
   }
   aggregationAction = camelCase(aggregationAction);
 
-  if (mapData.length && displayField === oldDisplayField) {
-    // update only
-    return mapData.map(([key, odv, calc]) => [key, calc[aggregationAction], calc]);
-  } 
-
-  return groupedData.map(([key, arr]) => {
-    const calc = new Calculations(arr, displayField);
+  return groupedData.map(([key, ov, calc]) => {
+    calc._changeKey(displayField)
     return [key, calc[aggregationAction], calc];
   });
   

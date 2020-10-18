@@ -3,7 +3,6 @@ export const LOAD_DATA_SAGA = 'LOAD_DATA_SAGA';
 export const LOAD_DATA_SUCCESS = 'LOAD_DATA_SUCCESS';
 export const LOAD_DATA_FAILURE = 'LOAD_DATA_FAILURE';
 
-export const APPLY_FILTERS_SAGA = 'APPLY_FILTERS_SAGA';
 export const SET_STATE_AND_GROUP_SAGA = 'SET_STATE_AND_GROUP_SAGA';
 export const SET_STATE_AND_GROUP = 'SET_STATE_AND_GROUP';
 export const SET_DISPLAY = 'SET_DISPLAY_FIELD';
@@ -12,8 +11,8 @@ export const SET_AGGREGATION_TYPE = 'SET_AGGREGATION_TYPE';
 export const SET_DISPLAY_FN = 'SET_DISPLAY_FN';
 export const ADD_FILTER_FN = 'ADD_FILTER_FN';
 export const ADD_FILTERS = 'ADD_FILTERS';
-export const ADD_FILTERS_SAGA = 'ADD_FILTERS_SAGA';
-
+export const APPLY_FILTERS_SAGA = 'APPLY_FILTERS_SAGA';
+export const UPDATE_DISPLAY_VALUES ='UPDATE_DISPLAY_VALUES' 
 export const loadData = (url) => ({
   type: LOAD_DATA_SAGA,
   payload: {
@@ -22,7 +21,7 @@ export const loadData = (url) => ({
 });
 
 export const updateFilters = (filteringFuncitons) => ({
-  type: ADD_FILTERS_SAGA,
+  type: APPLY_FILTERS_SAGA,
   payload: {
     filteringFuncitons,
   },

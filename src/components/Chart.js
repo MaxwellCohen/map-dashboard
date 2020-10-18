@@ -10,16 +10,16 @@ if (typeof window !== 'undefined') {
 const Highcharts = window.Highcharts;
 
 const Chart = () => {
-  const { mapData, displayField } = useSelector(({ data }) => data);
+  const { groupData, displayField } = useSelector(({ data }) => data);
   const options  = useSelector(({ options }) => options);
   const dispatch = useDispatch();
   useEffect(() => {
-    if (mapData.length !== 0) {
-      dispatch(Actions.setMapData(mapData, displayField));
+    if (groupData.length !== 0) {
+      dispatch(Actions.setMapData(groupData, displayField));
     } else {
       dispatch(Actions.setMapData())
     }
-  }, [mapData, displayField, dispatch]);
+  }, [groupData, displayField, dispatch]);
 
   return (
     <>

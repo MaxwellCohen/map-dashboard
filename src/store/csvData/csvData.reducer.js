@@ -11,7 +11,6 @@ const inital_state = {
   displayField: '',
   aggregationAction: '',
   filteringFuncitons: [],
-  mapData: [], //data grouped and agrated
   loading: false,
 };
 
@@ -29,6 +28,8 @@ export default (state = inital_state, { type, payload }) => {
       return updateState(state, payload);
     case Actions.ADD_FILTERS:
       return updateState(state, payload);
+    case Actions.UPDATE_DISPLAY_VALUES: 
+      return updateState(state, payload, state.loading);
     default:
       return state;
   }
