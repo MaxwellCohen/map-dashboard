@@ -24,10 +24,10 @@ export default function DropDown({ values, onChange, label, value }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (internalValue !== value) {
+    if (internalValue !== value && values.includes(value)) {
       setValue(value)
     }
-  }, [value, internalValue])
+  }, [value, internalValue, values])
 
   const handleChange = (event) => {
     setValue(event.target.value);

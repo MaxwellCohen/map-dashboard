@@ -8,8 +8,7 @@ import * as Actions from '../../store/csvData/csvData.actions';
 
 const FilterList = () => {
   const { titles, filteringFuncitons } = useSelector(({ data }) => data);
-  const [internalFilters, setInternalFilters] = useState(filteringFuncitons) 
-  console.log(internalFilters)
+  const [internalFilters, setInternalFilters] = useState(filteringFuncitons);
   const dispach = useDispatch();
 
   useEffect(() => {

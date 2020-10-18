@@ -1,17 +1,13 @@
 import React, { useEffect } from 'react';
-import Highcharts from 'highcharts/highmaps';
 import HighchartsReact from 'highcharts-react-official';
-import highchartsMap from 'highcharts/modules/map';
 import * as Actions from '../store/mapOptions/mapOptions.actions';
 import proj4 from 'proj4';
 import { useSelector, useDispatch } from 'react-redux';
 
-require('highcharts/modules/exporting')(Highcharts);
-
-highchartsMap(Highcharts);
 if (typeof window !== 'undefined') {
   window.proj4 = window.proj4 || proj4;
 }
+const Highcharts = window.Highcharts;
 
 const Chart = () => {
   const { mapData, displayField } = useSelector(({ data }) => data);
@@ -27,13 +23,11 @@ const Chart = () => {
 
   return (
     <>
-      {options ? (
         <HighchartsReact
           highcharts={Highcharts}
           options={options}
           constructorType={'mapChart'}
         />
-      ) : null}
     </>
   );
 };

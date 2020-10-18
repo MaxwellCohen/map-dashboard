@@ -1,5 +1,5 @@
 import * as Actions from './csvData.actions';
-import { filterData, groupData, processToDisplay, updateAggregationAction } from './csvDataTools';
+import { filterData, groupData, processToDisplay } from './csvDataTools';
 
 
 const inital_state = {
@@ -8,6 +8,7 @@ const inital_state = {
   rawData: [], // the parsed CSV file
   filteredData: [], // any filters run on the data (using filter funciton) also showen in table//
   stateKey: '',
+  stateMap: {},
   groupData: [],
   displayField: '',
   aggregationAction: '',
@@ -16,8 +17,8 @@ const inital_state = {
   loading: false,
 };
 
-export default (state = inital_state, action) => {
-  switch (action.type) {
+export default (state = inital_state, {type, payload}) => {
+  switch (type) {
     case Actions.REQUEST_DATA:
       return {
         ...inital_state,
@@ -27,7 +28,7 @@ export default (state = inital_state, action) => {
       return {
         ...inital_state,
         loading: false,
-        ...action.payload
+        ...payload
       };
     case Actions.LOAD_DATA_FAILURE: 
     return {
@@ -37,50 +38,32 @@ export default (state = inital_state, action) => {
     case Actions.SET_STATE_AND_GROUP:
       return {
         ...state,
-        stateKey: action.payload.stateKey,
-        groupData: groupData(action.payload.stateKey, state.filteredData),
+        stateKey: payload.stateKey,
+        groupData: groupData(state.stateMap, payload.stateKey, state.filteredData),
         mapData: [],
       };
     case Actions.SET_DISPLAY:
-      //updateAaggregationAction
-      const aggerationOnly =
-        state.displayField &&
-        state.aggregationAction &&
-        action.payload.displayField === state.displayField;
       return {
         ...state,
-        displayField: action.payload.displayField,
-        aggregationAction: action.payload.aggregationAction,
-        mapData: aggerationOnly
-          ? updateAggregationAction(
-              state.mapData,
-              action.payload.aggregationAction,
-            )
-          : processToDisplay(
-              state.groupData,
-              action.payload.displayField,
-              action.payload.aggregationAction,
-            ),
+        displayField: payload.displayField,
+        aggregationAction: payload.aggregationAction,
+        mapData: processToDisplay(
+          payload.displayField,
+          state.displayField,
+          payload.aggregationAction,
+          state.groupData, state.mapData),
       };
     case Actions.ADD_FILTERS:
-      const filteringFuncitons = action.payload.filteringFuncitons;
+      const filteringFuncitons = payload.filteringFuncitons;
       const filteredData = filterData(state.rawData, filteringFuncitons);
-      const newGroupData = groupData(state.stateKey, filteredData);
+      const newGroupData = groupData(state.stateMap, state.stateKey, filteredData);
+      const mapData = processToDisplay(state.displayField, state.displayField, state.aggregationAction, newGroupData);
       return {
         ...state,
         filteringFuncitons,
         filteredData,
         groupData: newGroupData,
-        mapData: processToDisplay(
-          newGroupData,
-          state.displayField,
-          state.aggregationAction,
-        ),
-      };
-    case Actions.APPLY_FILTERS:
-      return {
-        ...state,
-        mapData: action.payload.mapData,
+        mapData
       };
     default:
       return state;

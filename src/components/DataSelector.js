@@ -3,12 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import DropDown from './common/DropDown';
 import * as Actions from '../store/csvData/csvData.actions';
 import Calculations from '../utils/Calculations';
-import { startCase } from 'lodash';
 import { getQueryVariable } from '../utils/queryUtils';
 
 const aggerationOptions = Object.getOwnPropertyNames(Calculations.prototype)
-  .filter((k) => k !== 'constructor' && !k.startsWith('_') )
-  .map((s) => startCase(s));
+  .filter((k) => k !== 'constructor' && !k.startsWith('_'));
 
 const DataSelector = () => {
   const { titles, stateKey, displayField, aggregationAction } = useSelector(

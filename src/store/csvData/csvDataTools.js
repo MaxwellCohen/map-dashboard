@@ -1,9 +1,41 @@
-import stateMap from '../../constants/stateMap';
+
 import Calculations from '../../utils/Calculations';
 import { camelCase } from 'lodash';
 import { makeFitler } from '../../utils/Filters';
 
-export const groupData = (stateKey, data) => {
+export const cleanStateVal = (v) => ('' + v).replace(/[^a-z0-9]/gim, '').toUpperCase();
+export const buildStateVal = (mapData) => {
+  const properties = mapData.features.map(({ properties }) => properties);
+  const hcMap = properties.reduce((obj, item) => {
+    const hckey = item['hc-key'];
+    if (!hckey) return obj;
+    const entries = Object.entries(item);
+    entries.forEach(([k, i]) => {
+      if (
+        [
+          'labelrank',
+          'longitude',
+          'latitude',
+          'hc-middle-x',
+          'hc-middle-x',
+          'hc-middle-x',
+        ].includes(k)
+      )
+        return obj;
+      i = cleanStateVal(i);
+      if (obj[i] === undefined) {
+        obj[i] = hckey;
+      } else if (obj[i] !== hckey) {
+        obj[i] = null;
+      }
+    });
+    return obj;
+  }, {});
+  return hcMap;
+};
+
+
+export const groupData = (stateMap, stateKey, data) => {
   if (!stateKey) {
     return [];
   }
@@ -11,7 +43,7 @@ export const groupData = (stateKey, data) => {
     if (!item[stateKey]) {
       return acc;
     }
-    const key = normalizeState(item[stateKey]);
+    const key = normalizeState(stateMap, item[stateKey]);
     if (!key) {
       return acc;
     }
@@ -24,15 +56,12 @@ export const groupData = (stateKey, data) => {
   return Object.values(obj);
 };
 
-export const normalizeState = (state) => {
-  if (typeof state !== 'string') {
+export const normalizeState = (stateMap, state) => {
+  try {
+    return stateMap[cleanStateVal(state)] || null;
+  } catch {
     return null;
   }
-  const cleanState = stateMap[state.toLowerCase().replace(/[^a-z]/gim, '')];
-  if (cleanState) {
-    return 'us-' + cleanState;
-  }
-  return null;
 };
 export const filterData = (rawData, filterData) => {
   if (filterData.length === 0) {
@@ -46,32 +75,32 @@ export const filterData = (rawData, filterData) => {
 };
 
 export const processToDisplay = (
-  groupedData,
   displayField,
+  oldDisplayField,
   aggregationAction,
+  groupedData,
+  mapData = [],
 ) => {
+  // do not display if there is no display field or aggregationAction
   if (!aggregationAction || !displayField) {
     return [];
   }
-
   aggregationAction = camelCase(aggregationAction);
+
+  if (mapData.length && displayField === oldDisplayField) {
+    // update only
+    return mapData.map(([key, df, calc]) => {
+      const displayVal = calc[aggregationAction];
+      return [key, displayVal, calc];
+    });
+  } 
+
   return groupedData.map(([key, arr]) => {
     const calc = new Calculations(arr, displayField);
-    const displayVal = calc[aggregationAction]();
+    const displayVal = calc[aggregationAction];
     return [key, displayVal, calc];
   });
-};
-
-export const updateAggregationAction = (mapData, aggregationAction) => {
-  if (!aggregationAction || !Array.isArray(mapData)) {
-    return [];
-  }
-
-  aggregationAction = camelCase(aggregationAction);
-  return mapData.map(([key, df, calc]) => {
-    const displayVal = calc[aggregationAction]();
-    return [key, displayVal, calc];
-  });
+  
 };
 
 export const convertCSVToJSON = (str = '', delimiter = ',') => {
@@ -90,3 +119,5 @@ export const convertCSVToJSON = (str = '', delimiter = ',') => {
     }),
   ];
 };
+
+

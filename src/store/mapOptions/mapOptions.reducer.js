@@ -1,9 +1,14 @@
 import * as Actions from './mapOptions.actions';
-
 import mapData from '@highcharts/map-collection/countries/us/us-all.geo.json';
 const initial_state = {
   chart: {
     map: mapData,
+    borderWidth: 1,
+  },
+  legend: {
+    layout: 'vertical',
+    align: 'right',
+    floating: true,
   },
   title: {
     text: '',
@@ -20,16 +25,13 @@ const initial_state = {
       [1, '#C40401'],
     ],
   },
-  series: [
-    {
-      name: 'Separators',
-      type: 'mapline',
-      color: 'silver',
-      nullColor: 'silver',
+  plotOptions: {
+    mapline: {
       showInLegend: false,
       enableMouseTracking: false,
     },
-  ],
+  },
+  series: [],
 };
 
 export default (state = initial_state, action) => {
@@ -42,47 +44,52 @@ export default (state = initial_state, action) => {
     case Actions.SET_COLOR_AXIS_MAX:
       return {
         ...state,
-        colorAxis: {
-          ...state.colorAxis,
-          ...action.payload,
-        },
+        colorAxis: makeColorAxis(state.colorAxis, action.payload),
       };
     case Actions.SET_COLOR_AXIS_MIN:
       return {
         ...state,
-        colorAxis: {
-          ...state.colorAxis,
-          ...action.payload,
-        },
+        colorAxis: makeColorAxis(state.colorAxis, action.payload),
       };
     case Actions.SET_COLOR_AXIS_STOPS:
       return {
         ...state,
-        colorAxis: {
-          ...state.colorAxis,
-          stops: action.payload.stops,
-        },
+        colorAxis: makeColorAxis(state.colorAxis, action.payload),
       };
     case Actions.SET_MAP_DATA:
       return {
         ...state,
-        colorAxis: {
-          ...state.colorAxis,
-          ...action.payload.colorAxis,
-        },
-        series: [
-          { ...state.series[0] },
-          {
-            dataLabels: {
-              enabled: true,
-              format: '{point.name}',
-            },
-            ...action.payload.series,
-          },
-        ],
+        colorAxis: makeColorAxis(state.colorAxis, action.payload.colorAxis),
+        series: makeSeries(action.payload.series),
       };
-
     default:
       return state;
   }
+};
+
+const makeColorAxis = (stateColorAxis, payloadColorAxis) => {
+  return {
+    ...stateColorAxis,
+    ...payloadColorAxis,
+  };
+}
+
+const makeSeries = (seriesPayload) => {
+  return [
+    {
+      dataLabels: {
+        enabled: true,
+        format: '{point.name}',
+      },
+      keys: ['hc-key', 'value', 'calc'],
+      joinBy:'hc-key',
+      tooltip: {
+        headerFormat: '',
+        pointFormatter: function () {
+          return `<h2>${this.name}</h2><br>${this.calc._display()}`;
+        },
+      },
+      ...seriesPayload,
+    },
+  ];
 };
