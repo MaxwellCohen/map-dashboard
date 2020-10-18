@@ -7,7 +7,7 @@ import { startCase } from 'lodash';
 import { getQueryVariable } from '../utils/queryUtils';
 
 const aggerationOptions = Object.getOwnPropertyNames(Calculations.prototype)
-  .filter((k) => k !== 'constructor')
+  .filter((k) => k !== 'constructor' && !k.startsWith('_') )
   .map((s) => startCase(s));
 
 const DataSelector = () => {
