@@ -1,5 +1,5 @@
 import { getCSV } from '../../api/api';
-import { call, put, takeLatest, all, select } from 'redux-saga/effects';
+import { call, put, takeLatest, all, select, takeEvery } from 'redux-saga/effects';
 import * as Actions from './csvData.actions';
 import {
   groupData as gd,
@@ -169,9 +169,9 @@ function* setDisplay(action) {
 function* mySaga() {
   yield all([
     takeLatest(Actions.LOAD_DATA_SAGA, fetchData),
-    takeLatest(Actions.SET_DISPLAY_SAGA, setDisplay),
-    takeLatest(Actions.ADD_FILTERS_SAGA, updateFilters),
-    takeLatest(Actions.SET_STATE_AND_GROUP_SAGA, groupDataSaga),
+    takeEvery(Actions.SET_DISPLAY_SAGA, setDisplay),
+    takeEvery(Actions.ADD_FILTERS_SAGA, updateFilters),
+    takeEvery(Actions.SET_STATE_AND_GROUP_SAGA, groupDataSaga),
   ]);
 }
 
