@@ -7,8 +7,8 @@ import * as Actions from '../../store/mapOptions/mapOptions.actions';
 import { useSelector, useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { getQueryVariable } from '../../utils/queryUtils';
-import useChartSettings, {stopObjToArr} from './useChartSettings';
-
+import useChartSettings, { stopObjToArr } from './useChartSettings';
+import MapSelector from '../mapSelector';
 
 const ChartSettings = () => {
   // const [gridApi, setGridApi] = useState(null);
@@ -26,8 +26,14 @@ const ChartSettings = () => {
     })),
   );
 
-  const [onCellValueChanged, addStop, deleteRow, setTitleHandle, setMinHandle, setMaxHandle] = useChartSettings();
-
+  const [
+    onCellValueChanged,
+    addStop,
+    deleteRow,
+    setTitleHandle,
+    setMinHandle,
+    setMaxHandle,
+  ] = useChartSettings();
 
   useEffect(() => {
     const mi = getQueryVariable('mi');
@@ -55,24 +61,20 @@ const ChartSettings = () => {
     }
   }, [stopData, loadedURL, dispatch]);
 
-
-
   function onGridReady(params) {
     // setGridApi(params.api);
     // setGridColumnApi(params.columnApi);
   }
 
-
   const DeleteButton = () => {
-    return (
-      <Button style={{ width: '100%' }} >
-        Delete
-      </Button>
-    );
+    return <Button style={{ width: '100%' }}>Delete</Button>;
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
+        <MapSelector />
+      </div>
       <BasicTextField
         label='title'
         value={chartTitle}

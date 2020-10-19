@@ -3,12 +3,13 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { startCase } from 'lodash';
 
-export default function DropDown({ values, onChange, label, value }) {
+export default function DropDown({ values, onChange, label, value, getOptionLabel, getOptionSelected }) {
   return (
     <>
       <Autocomplete
         options={values}
-        getOptionLabel={(option) => startCase(option)}
+        getOptionLabel={getOptionLabel}
+        getOptionSelected={getOptionSelected}
         value={value}
         onChange={(event, newValue) => {
           onChange(newValue);
@@ -22,4 +23,9 @@ export default function DropDown({ values, onChange, label, value }) {
       />
     </>
   );
+}
+
+DropDown.defaultProps = {
+  getOptionLabel: (option) => startCase(option),
+  getOptionSelected: (option) => startCase(option)
 }

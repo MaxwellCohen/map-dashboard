@@ -7,7 +7,8 @@ import {
   select,
   takeEvery,
 } from 'redux-saga/effects';
-import * as Actions from './csvData/csvData.actions';
+import * as csvDataActions from './csvData/csvData.actions';
+import * as mapSettingActons from './mapSettings/mapSettings.actions';
 import {
   groupData as gd,
   normalizeState,
@@ -18,44 +19,55 @@ import {
 } from './csvData/csvDataTools';
 import { updateQuery, getQueryVariable } from '../utils/queryUtils';
 
-var mapData = require('@highcharts/map-collection/countries/us/us-all.geo.json');
-const stateMap = buildStateVal(mapData);
+require('@highcharts/map-collection/countries/us/us-all');
 
 const getData = (state) => state.data;
+const getMapName = (state) => state.mapSettings.chart.map
+
+function* updateUrlLoadData (url) {
+
+  let {
+    df: displayField = '',
+    a:  aggregationAction = '',
+    f:  filteringFuncitons = [],
+    s:  stateKey = '',
+  } = getQueryVariable();
+
+  yield put({
+    type: csvDataActions.UPDATE_DISPLAY_VALUES,
+    payload: {
+      url,
+      displayField,
+      aggregationAction,
+      filteringFuncitons,
+      stateKey,
+    },
+  });
+  
+  return [displayField, aggregationAction, filteringFuncitons, stateKey]
+}
+
 
 function* fetchData(action) {
   try {
-    yield put({ type: Actions.REQUEST_DATA });
+    yield put({ type: csvDataActions.REQUEST_DATA });
     const url = action.payload.url;
     if (!url) {
-      yield put({ type: Actions.LOAD_DATA_SUCCESS, payload: {} });
+      yield put({ type: csvDataActions.LOAD_DATA_SUCCESS, payload: {} });
     }
-
-    let {
-      df: displayField = '',
-      a: aggregationAction = '',
-      f: filteringFuncitons = [],
-      s: stateKey = '',
-    } = getQueryVariable();
-
+    const { data: apiData } = yield call(getCSV, url);
     updateQuery('url', url);
 
-    yield put({
-      type: Actions.UPDATE_DISPLAY_VALUES,
-      payload: {
-        url,
-        displayField,
-        aggregationAction,
-        filteringFuncitons,
-        stateKey,
-      },
-    });
 
-    const { data: apiData } = yield call(getCSV, url);
+
     const [titles, rawData] = yield call(convertCSVToJSON, apiData);
+    let [displayField, aggregationAction, filteringFuncitons, stateKey] = yield call(updateUrlLoadData);
+
+    const map = yield select(getMapName);
+    const stateMap = buildStateVal(window.Highcharts.maps[map])
     stateKey =
       stateKey ||
-      titles.find((t) => normalizeState(stateMap, (rawData[0])[t])) ||
+      titles.find((t) => normalizeState(stateMap, rawData[0][t])) ||
       '';
 
     const filteredData = yield call(filterData, rawData, filteringFuncitons);
@@ -70,7 +82,7 @@ function* fetchData(action) {
     );
 
     yield put({
-      type: Actions.LOAD_DATA_SUCCESS,
+      type: csvDataActions.LOAD_DATA_SUCCESS,
       payload: {
         url,
         titles,
@@ -85,9 +97,11 @@ function* fetchData(action) {
       },
     });
   } catch (e) {
-    yield put({ type: Actions.LOAD_DATA_FAILURE, message: e.message });
+    console.log(e)
+    yield put({ type: csvDataActions.LOAD_DATA_FAILURE, message: e.message });
   }
 }
+
 
 function* updateFilters(action) {
   try {
@@ -98,7 +112,10 @@ function* updateFilters(action) {
       return;
     }
     updateQuery('f', filteringFuncitons);
-    yield put({type: Actions.UPDATE_DISPLAY_VALUES, payload: {filteringFuncitons}});
+    yield put({
+      type: csvDataActions.UPDATE_DISPLAY_VALUES,
+      payload: { filteringFuncitons },
+    });
     const filteredData = yield call(
       filterData,
       state.rawData,
@@ -118,7 +135,7 @@ function* updateFilters(action) {
     );
 
     yield put({
-      type: Actions.ADD_FILTERS,
+      type: csvDataActions.ADD_FILTERS,
       payload: {
         filteringFuncitons,
         filteredData,
@@ -134,7 +151,7 @@ function* groupDataSaga(action) {
     const state = yield select(getData);
     updateQuery('s', stateKey);
     yield put({
-      type: Actions.UPDATE_DISPLAY_VALUES,
+      type: csvDataActions.UPDATE_DISPLAY_VALUES,
       payload: {
         stateKey,
       },
@@ -154,7 +171,7 @@ function* groupDataSaga(action) {
     );
 
     yield put({
-      type: Actions.SET_STATE_AND_GROUP,
+      type: csvDataActions.SET_STATE_AND_GROUP,
       payload: {
         stateKey,
         groupData,
@@ -171,7 +188,7 @@ function* setDisplay(action) {
     const state = yield select(getData);
 
     yield put({
-      type: Actions.UPDATE_DISPLAY_VALUES,
+      type: csvDataActions.UPDATE_DISPLAY_VALUES,
       payload: {
         displayField,
         aggregationAction,
@@ -186,7 +203,7 @@ function* setDisplay(action) {
     );
 
     yield put({
-      type: Actions.SET_DISPLAY,
+      type: csvDataActions.SET_DISPLAY,
       payload: {
         displayField,
         aggregationAction,
@@ -196,12 +213,47 @@ function* setDisplay(action) {
   } catch {}
 }
 
+
+function loadMapScript(mapNameJSFile) {
+  return new Promise(resolve => {
+    const script = document.createElement('script');
+    script.src = `https://code.highcharts.com/mapdata/${mapNameJSFile}`;
+    script.onload = resolve
+    document.body.appendChild(script);
+  });
+}
+
+function* loadNewMap(action) {
+  const mapInfo = action.payload.mapInfo;
+  if (!mapInfo) {
+    yield put({type: mapSettingActons.CHANGE_MAP, payload: {mapInfo}});
+    return;
+  }
+
+  const map = mapInfo[1].replace('.js', '');
+  const chart = {
+    map
+  }
+
+  if(!window.Highcharts.maps[map]) {
+    // need to load map first 
+    yield call(loadMapScript, mapInfo[1])
+  } 
+  const newStateMap = buildStateVal(window.Highcharts.maps[map])
+  yield put({type: csvDataActions.UPDATE_STATE_MAP, payload: {stateMap: newStateMap}});
+  yield put({type: mapSettingActons.CHANGE_MAP, payload: {mapInfo, chart}});
+  const {stateKey} = yield select(getData);
+  yield put({type: csvDataActions.SET_STATE_AND_GROUP_SAGA, payload: {stateKey}});
+}
+
+
 function* mySaga() {
   yield all([
-    takeLatest(Actions.LOAD_DATA_SAGA, fetchData),
-    takeEvery(Actions.SET_DISPLAY_SAGA, setDisplay),
-    takeEvery(Actions.APPLY_FILTERS_SAGA, updateFilters),
-    takeEvery(Actions.SET_STATE_AND_GROUP_SAGA, groupDataSaga),
+    takeLatest(csvDataActions.LOAD_DATA_SAGA, fetchData),
+    takeEvery(csvDataActions.SET_DISPLAY_SAGA, setDisplay),
+    takeEvery(csvDataActions.APPLY_FILTERS_SAGA, updateFilters),
+    takeEvery(csvDataActions.SET_STATE_AND_GROUP_SAGA, groupDataSaga),
+    takeEvery(mapSettingActons.LOAD_NEW_MAP_SAGA, loadNewMap),
   ]);
 }
 

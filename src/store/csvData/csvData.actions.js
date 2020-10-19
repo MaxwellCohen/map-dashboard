@@ -13,6 +13,7 @@ export const ADD_FILTER_FN = 'ADD_FILTER_FN';
 export const ADD_FILTERS = 'ADD_FILTERS';
 export const APPLY_FILTERS_SAGA = 'APPLY_FILTERS_SAGA';
 export const UPDATE_DISPLAY_VALUES ='UPDATE_DISPLAY_VALUES' 
+export const UPDATE_STATE_MAP = 'UPDATE_STATE_MAP';
 export const loadData = (url) => ({
   type: LOAD_DATA_SAGA,
   payload: {

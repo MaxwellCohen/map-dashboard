@@ -8,6 +8,7 @@ import csvDataReducer from './store/csvData/csvData.reducer';
 import mapOptions from './store/mapOptions/mapOptions.reducer';
 import createSagaMiddleware from 'redux-saga'
 import mySaga from './store/sagas';
+import mapSettingsReducer from './store/mapSettings/mapSettings.reducer';
 
 
 const sagaMiddleware = createSagaMiddleware()
@@ -16,6 +17,7 @@ const sagaMiddleware = createSagaMiddleware()
 const store = createStore(combineReducers({
   data: csvDataReducer,
   options: mapOptions,
+  mapSettings: mapSettingsReducer,
 }), applyMiddleware(sagaMiddleware));
 
 sagaMiddleware.run(mySaga);

@@ -1,5 +1,7 @@
 import * as Actions from './csvData.actions';
 
+
+
 const inital_state = {
   url: '',
   titles: [], // list of keys that can be selected
@@ -31,6 +33,8 @@ export default (state = inital_state, { type, payload }) => {
       return updateState(state, payload);
     case Actions.UPDATE_DISPLAY_VALUES: 
       return updateState(state, payload, state.loading, true);
+    case Actions.UPDATE_STATE_MAP: 
+      return updateState(state, payload);
     default:
       return state;
   }

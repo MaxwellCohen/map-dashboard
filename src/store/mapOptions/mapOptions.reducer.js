@@ -1,8 +1,8 @@
+import * as mapSettingsActions  from '../mapSettings/mapSettings.actions';
 import * as Actions from './mapOptions.actions';
-import mapData from '@highcharts/map-collection/countries/us/us-all.geo.json';
 const initial_state = {
   chart: {
-    map: mapData,
+    map: 'countries/us/us-all',
     borderWidth: 1,
   },
   animation: {
@@ -37,33 +37,44 @@ const initial_state = {
   series: [],
 };
 
-export default (state = initial_state, action) => {
-  switch (action.type) {
+export default (state = initial_state, {type, payload}) => {
+  switch (type) {
+    case mapSettingsActions.CHANGE_MAP:
+      const data = (state?.series[0]?.data || []).filter(({path}) => !path)
+      return {
+        ...state,
+        chart: {
+          ...state.chart,
+          ...payload.chart
+        },
+        series: makeSeries({...state.series[0], data}, payload.chart || state.chart)
+      }
+
     case Actions.SET_TITLE:
       return {
         ...state,
-        title: action.payload,
+        title: payload,
       };
     case Actions.SET_COLOR_AXIS_MAX:
       return {
         ...state,
-        colorAxis: makeColorAxis(state.colorAxis, action.payload),
+        colorAxis: makeColorAxis(state.colorAxis, payload),
       };
     case Actions.SET_COLOR_AXIS_MIN:
       return {
         ...state,
-        colorAxis: makeColorAxis(state.colorAxis, action.payload),
+        colorAxis: makeColorAxis(state.colorAxis, payload),
       };
     case Actions.SET_COLOR_AXIS_STOPS:
       return {
         ...state,
-        colorAxis: makeColorAxis(state.colorAxis, action.payload),
+        colorAxis: makeColorAxis(state.colorAxis, payload),
       };
     case Actions.SET_MAP_DATA:
       return {
         ...state,
-        colorAxis: makeColorAxis(state.colorAxis, action.payload.colorAxis),
-        series: makeSeries(action.payload.series),
+        colorAxis: makeColorAxis(state.colorAxis, payload.colorAxis),
+        series: makeSeries(payload.series, state.chart),
       };
     default:
       return state;
@@ -77,7 +88,7 @@ const makeColorAxis = (stateColorAxis, payloadColorAxis) => {
   };
 }
 
-const makeSeries = (seriesPayload) => {
+const makeSeries = (seriesPayload, chart) => {
   return [
     {
       dataLabels: {
@@ -93,6 +104,7 @@ const makeSeries = (seriesPayload) => {
         },
       },
       ...seriesPayload,
+      mapData: chart.map && window.Highcharts.maps[chart.map],
     },
   ];
 };

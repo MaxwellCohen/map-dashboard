@@ -7,11 +7,11 @@ import * as Actions from '../../store/csvData/csvData.actions';
 
 const FilterList = () => {
   const { filteringFuncitons } = useSelector(({ data }) => data);
-  const [internalFilters, setInternalFilters] = useState(filteringFuncitons);
+  const [internalFilters, setInternalFilters] = useState(filteringFuncitons || []);
   const dispach = useDispatch();
 
   useEffect(() => {
-    setInternalFilters(filteringFuncitons)
+    setInternalFilters(filteringFuncitons || [])
   }, [filteringFuncitons])
 
   const addFitler = () => {
