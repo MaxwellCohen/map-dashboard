@@ -1,4 +1,4 @@
-import { getCSV } from '../../api/api';
+import { getCSV } from '../api/api';
 import {
   call,
   put,
@@ -7,7 +7,7 @@ import {
   select,
   takeEvery,
 } from 'redux-saga/effects';
-import * as Actions from './csvData.actions';
+import * as Actions from './csvData/csvData.actions';
 import {
   groupData as gd,
   normalizeState,
@@ -15,8 +15,8 @@ import {
   buildStateVal,
   processToDisplay,
   filterData,
-} from './csvDataTools';
-import { updateQuery, getQueryVariable } from '../../utils/queryUtils';
+} from './csvData/csvDataTools';
+import { updateQuery, getQueryVariable } from '../utils/queryUtils';
 
 var mapData = require('@highcharts/map-collection/countries/us/us-all.geo.json');
 const stateMap = buildStateVal(mapData);
@@ -60,9 +60,9 @@ function* fetchData(action) {
 
     const filteredData = yield call(filterData, rawData, filteringFuncitons);
 
-    const groupData = yield call(gd, stateMap, stateKey, filteredData);
+    let groupData = yield call(gd, stateMap, stateKey, filteredData);
 
-    const mapData = yield call(
+    groupData = yield call(
       processToDisplay,
       displayField,
       aggregationAction,
@@ -79,7 +79,7 @@ function* fetchData(action) {
         filteredData,
         filteringFuncitons,
         aggregationAction,
-        groupData: mapData,
+        groupData,
         stateKey,
         stateMap,
       },
@@ -104,13 +104,13 @@ function* updateFilters(action) {
       state.rawData,
       filteringFuncitons,
     );
-    const groupData = yield call(
+    let groupData = yield call(
       gd,
       state.stateMap,
       state.stateKey,
       filteredData,
     );
-    const mapData = yield call(
+    groupData = yield call(
       processToDisplay,
       state.displayField,
       state.aggregationAction,
@@ -122,7 +122,7 @@ function* updateFilters(action) {
       payload: {
         filteringFuncitons,
         filteredData,
-        groupData: mapData,
+        groupData,
       },
     });
   } catch {}
@@ -140,13 +140,13 @@ function* groupDataSaga(action) {
       },
     });
 
-    const groupData = yield call(
+    let groupData = yield call(
       gd,
       state.stateMap,
       stateKey,
       state.filteredData,
     );
-    const mapData = yield call(
+    groupData = yield call(
       processToDisplay,
       state.displayField,
       state.aggregationAction,
@@ -157,7 +157,7 @@ function* groupDataSaga(action) {
       type: Actions.SET_STATE_AND_GROUP,
       payload: {
         stateKey,
-        groupData: mapData,
+        groupData,
       },
     });
   } catch {}

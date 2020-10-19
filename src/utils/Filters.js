@@ -29,11 +29,13 @@ const parseData = (type, value) => {
   }
 };
 
+const alwaysTruefn = () => true
+
 const baseCompare = (value, field, numCompare, dateCompare, defaultCompare) => (
   item,
 ) => {
   if (!value) {
-    return () => true;
+    return alwaysTruefn;
   }
   const [type, userValue] = determinType(value);
   const iv = parseData(type, item[field]);
@@ -48,6 +50,10 @@ const baseCompare = (value, field, numCompare, dateCompare, defaultCompare) => (
 };
 
 const dateBetween = (field, startDate, endDate) => {
+  if( !startDate || !endDate) {
+    return alwaysTruefn
+  }
+
   startDate = new Date(startDate);
   endDate = new Date(endDate);
   return (item) => {
@@ -60,12 +66,18 @@ const dateBetween = (field, startDate, endDate) => {
 };
 
 const equals = (field, value) => {
+  if(!value) {
+    return alwaysTruefn
+  }
   const numCompare = memoize((iv, v) => iv === v);
   const dateCompare = memoize((iv, v) => isSameDay(new Date(iv), v));
   const defaultCompare = memoize((iv, v) => iv === v);
   return baseCompare(value, field, numCompare, dateCompare, defaultCompare);
 };
 const greater = (field, value) => {
+  if(!value) {
+    return alwaysTruefn
+  }
   const numCompare = memoize((iv, v) => iv >= v);
   const dateCompare = memoize((iv, v) => isAfter(new Date(iv), v));
   const defaultCompare = memoize((iv, v) => iv >= v);
@@ -73,6 +85,9 @@ const greater = (field, value) => {
 };
 
 const less = (field, value) => {
+  if(!value) {
+    return alwaysTruefn
+  }
   const numCompare = memoize((iv, v) => iv <= v);
   const dateCompare = memoize((iv, v) => isBefore(new Date(iv), v));
   const defaultCompare = memoize((iv, v) => iv <= v);

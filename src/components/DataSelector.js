@@ -37,7 +37,7 @@ const DataSelector = () => {
             value={stateKey}
             values={titles}
             onChange={onStateChange}
-            label='State Field'
+            label='Location Key'
           />
         </div>
       ) : null}

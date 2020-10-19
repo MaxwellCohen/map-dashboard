@@ -2,24 +2,25 @@ import React, { useEffect, useState } from 'react';
 import BasicTextFields from '../common/BasicTextFields';
 
 const SingleValueFilter = ({ filterValues: [value = ''], onFilterValueChange }) => {
-  const [internalUrl, setInternalUrl] = useState(value);
+  const [internalVal, setInternalVal] = useState(value);
   useEffect(() => {
-    setInternalUrl(value);
+    setInternalVal(value);
   }, [value]);
 
   const setValue = (newValue) => {
-    if (newValue === value) {
-      return;
-    }
-    setInternalUrl(value);
-    onFilterValueChange([newValue]);
+    setInternalVal(newValue);
+  };
+
+  const updateFilter = () => {
+    onFilterValueChange([internalVal]);
   };
 
   return (
     <BasicTextFields
       label='value'
-      value={internalUrl}
+      value={internalVal}
       onChange={(e) => setValue(e.target.value)}
+      onBlur={updateFilter}
     />
   );
 };

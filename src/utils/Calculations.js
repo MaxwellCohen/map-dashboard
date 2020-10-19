@@ -38,7 +38,7 @@ export default class Calculations {
     return this.arr.length;
   }
 
-  get countOfNumbers() {
+  get _countOfNumbers() {
     return this._numberData.length;
   }
 

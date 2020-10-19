@@ -17,7 +17,7 @@ const Chart = () => {
     if (groupData.length !== 0) {
       dispatch(Actions.setMapData(groupData, displayField));
     } else {
-      dispatch(Actions.setMapData())
+      dispatch(Actions.setMapData());
     }
   }, [groupData, displayField, dispatch]);
 

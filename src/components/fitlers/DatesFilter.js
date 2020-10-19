@@ -24,7 +24,7 @@ const dateFormat = (date) => {
   return format(date, 'yyyy-MM-dd');
 };
 
-const DatesFilter = ({ dataField, filterValues:[startDate = '', endDate = ''], onDataFieldChange, onFilterValueChange }) => {
+const DatesFilter = ({ dataField, filterValues:[startDate = '', endDate = ''], onFilterValueChange }) => {
   const { rawData } = useSelector(({ data }) => data);
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
@@ -41,14 +41,13 @@ const DatesFilter = ({ dataField, filterValues:[startDate = '', endDate = ''], o
       setMinDate(minDateValue);
       setMaxDate(maxDateValue);
       if (!startDate || !endDate) {
-
         updateFilter(minDateValue, maxDateValue);
       }
     } catch (e) {
       setMinDate('');
       setMaxDate('');
     }
-  }, [dataField, setMinDate, setMaxDate, onDataFieldChange, rawData, updateFilter, startDate,  endDate]);
+  }, [dataField, setMinDate, setMaxDate, rawData, updateFilter, startDate,  endDate]);
 
   if (!dataField) {
     return null;

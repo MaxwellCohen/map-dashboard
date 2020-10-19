@@ -12,6 +12,7 @@ const inital_state = {
   aggregationAction: '',
   filteringFuncitons: [],
   loading: false,
+  processing: false,
 };
 
 export default (state = inital_state, { type, payload }) => {
@@ -29,16 +30,17 @@ export default (state = inital_state, { type, payload }) => {
     case Actions.ADD_FILTERS:
       return updateState(state, payload);
     case Actions.UPDATE_DISPLAY_VALUES: 
-      return updateState(state, payload, state.loading);
+      return updateState(state, payload, state.loading, true);
     default:
       return state;
   }
 };
 
-const updateState = (is = {}, p = {}, loading = false) => {
+const updateState = (is = {}, p = {}, loading = false, processing = false) => {
   return {
     ...is,
     ...p,
     loading,
+    processing
   };
 };

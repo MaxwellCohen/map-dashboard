@@ -33,15 +33,14 @@ const FilterList = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <div style={{ alignSelf:'flex-end', flex: 1 }}>
-        <Button onClick={addFitler}>add filter</Button>
-      </div>
       {
         internalFilters.map((filter, index) => {
           return <FilterItem key={index} filterSettings={filter} onFilterChange={(f) => filterChangeHandler(index, f)} onDelete={() => onDelete(index)} />
         })
       }
-
+      <div style={{ alignSelf:'flex-end', flex: 1 }}>
+        <Button onClick={addFitler}>add filter</Button>
+      </div>
     </div>
   );
 };

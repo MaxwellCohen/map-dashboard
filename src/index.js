@@ -7,7 +7,7 @@ import * as serviceWorker from './serviceWorker';
 import csvDataReducer from './store/csvData/csvData.reducer';
 import mapOptions from './store/mapOptions/mapOptions.reducer';
 import createSagaMiddleware from 'redux-saga'
-import mySaga from './store/csvData/sagas';
+import mySaga from './store/sagas';
 
 
 const sagaMiddleware = createSagaMiddleware()

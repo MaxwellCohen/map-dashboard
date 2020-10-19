@@ -5,6 +5,9 @@ const initial_state = {
     map: mapData,
     borderWidth: 1,
   },
+  animation: {
+    duration: 1000
+  },
   legend: {
     layout: 'vertical',
     align: 'right',
