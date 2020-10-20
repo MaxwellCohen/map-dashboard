@@ -14,6 +14,8 @@ export const ADD_FILTERS = 'ADD_FILTERS';
 export const APPLY_FILTERS_SAGA = 'APPLY_FILTERS_SAGA';
 export const UPDATE_DISPLAY_VALUES ='UPDATE_DISPLAY_VALUES' 
 export const UPDATE_STATE_MAP = 'UPDATE_STATE_MAP';
+export const LOAD_FROM_URL = 'LOAD_FROM_URL' 
+
 export const loadData = (url) => ({
   type: LOAD_DATA_SAGA,
   payload: {
@@ -42,3 +44,7 @@ export const updateDisplay = (displayField, aggregationAction) => ({
     aggregationAction,
   },
 });
+
+export const loadFromURLSetings = () => ({
+  type: LOAD_FROM_URL
+})

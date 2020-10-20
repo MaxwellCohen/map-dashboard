@@ -15,7 +15,6 @@ const listOfMaps = Object.entries(Highcharts.mapDataIndex).flatMap(([mapGroup, m
 const MapSelector = () => {
   const {mapInfo} = useSelector(({mapSettings}) => mapSettings);
   const dispatch = useDispatch();
-  
   const updateMap = (v) => {
     dispatch(loadNewMap(v));
   }

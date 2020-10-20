@@ -28,5 +28,9 @@ export const updateQuery = (key, value) => {
 };
 
 export const clearQueryUrl = () => {
-  window.history.replaceState(null, null, '?');
+  updateQuery('df', '')
+  updateQuery('a', '')
+  updateQuery('f', [])
+  updateQuery('s', '')
+ 
 };

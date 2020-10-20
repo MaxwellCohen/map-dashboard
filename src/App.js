@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Grid from './components/Grid';
 import ChartSection from './sections/ChartSection';
 import SettingSection from './sections/SettingSection';
+import * as Actions from './store/csvData/csvData.actions';
+import { useDispatch} from 'react-redux';
 
 const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(Actions.loadFromURLSetings());
+  }, [dispatch]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{textAlign: 'center'}}> 

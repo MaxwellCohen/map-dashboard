@@ -20,15 +20,6 @@ const UrlSelector = () => {
     clearQueryUrl();
     dispatch(Actions.loadData(''));
   } 
-  
-  useEffect(() => {
-    const queryURL = getQueryVariable('url');
-    if (queryURL) {
-      dispatch(Actions.loadData(queryURL));
-    }
-  }, [dispatch]);
-
-
 
   const setURL = (newUrl) => {
     if (newUrl === loadedURL) {

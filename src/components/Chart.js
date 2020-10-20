@@ -12,8 +12,8 @@ const Highcharts = window.Highcharts;
 const Chart = () => {
   const { groupData, displayField } = useSelector(({ data }) => data);
   const options  = useSelector(({ options }) => options);
-  console.log(options)
   const dispatch = useDispatch();
+
   useEffect(() => {
     if (groupData.length !== 0) {
       dispatch(Actions.setMapData(groupData, displayField));

@@ -22,17 +22,16 @@ import { updateQuery, getQueryVariable } from '../utils/queryUtils';
 require('@highcharts/map-collection/countries/us/us-all');
 
 const getData = (state) => state.data;
-const getMapName = (state) => state.mapSettings.chart.map
+const getMapName = (state) => state.mapSettings.chart.map;
 
-function* updateUrlLoadData (url) {
-
+function* updateUrlLoadData(url) {
   let {
     df: displayField = '',
-    a:  aggregationAction = '',
-    f:  filteringFuncitons = [],
-    s:  stateKey = '',
+    a: aggregationAction = '',
+    f: filteringFuncitons = [],
+    s: stateKey = '',
   } = getQueryVariable();
-
+  updateQuery('url', url);
   yield put({
     type: csvDataActions.UPDATE_DISPLAY_VALUES,
     payload: {
@@ -43,10 +42,39 @@ function* updateUrlLoadData (url) {
       stateKey,
     },
   });
-  
-  return [displayField, aggregationAction, filteringFuncitons, stateKey]
+
+  return [displayField, aggregationAction, filteringFuncitons, stateKey];
 }
 
+function* getfigureOutStateInfo(rawData, titles, stateKey) {
+  const map = yield select(getMapName);
+  const stateMap = buildStateVal(window.Highcharts.maps[map]);
+  if (!stateKey) {
+    stateKey =
+      titles.find((t) => normalizeState(stateMap, rawData[0][t])) || '';
+  }
+  yield put({
+    type: csvDataActions.UPDATE_DISPLAY_VALUES,
+    payload: {
+      stateMap,
+      stateKey,
+    },
+  });
+  return [stateKey, stateMap];
+}
+
+function* groupAndDisplayData(filteredData, displayField, aggregationAction) {
+  const { stateMap, stateKey } = yield select(getData);
+  let groupData = yield call(gd, stateMap, stateKey, filteredData);
+
+  groupData = yield call(
+    processToDisplay,
+    displayField,
+    aggregationAction,
+    groupData,
+  );
+  return groupData;
+}
 
 function* fetchData(action) {
   try {
@@ -55,32 +83,26 @@ function* fetchData(action) {
     if (!url) {
       yield put({ type: csvDataActions.LOAD_DATA_SUCCESS, payload: {} });
     }
+    let stateMap;
     const { data: apiData } = yield call(getCSV, url);
-    updateQuery('url', url);
-
-
-
     const [titles, rawData] = yield call(convertCSVToJSON, apiData);
-    let [displayField, aggregationAction, filteringFuncitons, stateKey] = yield call(updateUrlLoadData);
-
-    const map = yield select(getMapName);
-    const stateMap = buildStateVal(window.Highcharts.maps[map])
-    stateKey =
-      stateKey ||
-      titles.find((t) => normalizeState(stateMap, rawData[0][t])) ||
-      '';
-
-    const filteredData = yield call(filterData, rawData, filteringFuncitons);
-
-    let groupData = yield call(gd, stateMap, stateKey, filteredData);
-
-    groupData = yield call(
-      processToDisplay,
+    let [
       displayField,
       aggregationAction,
-      groupData,
+      filteringFuncitons,
+      stateKey,
+    ] = yield updateUrlLoadData(url);
+    [stateKey, stateMap] = yield getfigureOutStateInfo(
+      rawData,
+      titles,
+      stateKey,
     );
-
+    const filteredData = yield call(filterData, rawData, filteringFuncitons);
+    const groupData = yield groupAndDisplayData(
+      filteredData,
+      displayField,
+      aggregationAction,
+    );
     yield put({
       type: csvDataActions.LOAD_DATA_SUCCESS,
       payload: {
@@ -97,11 +119,10 @@ function* fetchData(action) {
       },
     });
   } catch (e) {
-    console.log(e)
+    console.log(e);
     yield put({ type: csvDataActions.LOAD_DATA_FAILURE, message: e.message });
   }
 }
-
 
 function* updateFilters(action) {
   try {
@@ -121,17 +142,11 @@ function* updateFilters(action) {
       state.rawData,
       filteringFuncitons,
     );
-    let groupData = yield call(
-      gd,
-      state.stateMap,
-      state.stateKey,
+
+    const groupData = yield groupAndDisplayData(
       filteredData,
-    );
-    groupData = yield call(
-      processToDisplay,
       state.displayField,
       state.aggregationAction,
-      groupData,
     );
 
     yield put({
@@ -148,7 +163,7 @@ function* updateFilters(action) {
 function* groupDataSaga(action) {
   try {
     const stateKey = action.payload.stateKey;
-    const state = yield select(getData);
+
     updateQuery('s', stateKey);
     yield put({
       type: csvDataActions.UPDATE_DISPLAY_VALUES,
@@ -157,17 +172,13 @@ function* groupDataSaga(action) {
       },
     });
 
-    let groupData = yield call(
-      gd,
-      state.stateMap,
-      stateKey,
-      state.filteredData,
+    const { filteredData, displayField, aggregationAction } = yield select(
+      getData,
     );
-    groupData = yield call(
-      processToDisplay,
-      state.displayField,
-      state.aggregationAction,
-      groupData,
+    const groupData = yield groupAndDisplayData(
+      filteredData,
+      displayField,
+      aggregationAction,
     );
 
     yield put({
@@ -213,12 +224,11 @@ function* setDisplay(action) {
   } catch {}
 }
 
-
 function loadMapScript(mapNameJSFile) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const script = document.createElement('script');
     script.src = `https://code.highcharts.com/mapdata/${mapNameJSFile}`;
-    script.onload = resolve
+    script.onload = resolve;
     document.body.appendChild(script);
   });
 }
@@ -226,30 +236,59 @@ function loadMapScript(mapNameJSFile) {
 function* loadNewMap(action) {
   const mapInfo = action.payload.mapInfo;
   if (!mapInfo) {
-    yield put({type: mapSettingActons.CHANGE_MAP, payload: {mapInfo}});
+    yield put({ type: mapSettingActons.CHANGE_MAP, payload: { mapInfo } });
     return;
   }
-
+  updateQuery('map', mapInfo);
   const map = mapInfo[1].replace('.js', '');
   const chart = {
-    map
-  }
+    map,
+  };
 
-  if(!window.Highcharts.maps[map]) {
-    // need to load map first 
-    yield call(loadMapScript, mapInfo[1])
-  } 
-  const newStateMap = buildStateVal(window.Highcharts.maps[map])
-  yield put({type: csvDataActions.UPDATE_STATE_MAP, payload: {stateMap: newStateMap}});
-  yield put({type: mapSettingActons.CHANGE_MAP, payload: {mapInfo, chart}});
-  const {stateKey} = yield select(getData);
-  yield put({type: csvDataActions.SET_STATE_AND_GROUP_SAGA, payload: {stateKey}});
+  if (!window.Highcharts.maps[map]) {
+    // need to load map first
+    yield call(loadMapScript, mapInfo[1]);
+  }
+  const newStateMap = buildStateVal(window.Highcharts.maps[map]);
+  yield put({
+    type: csvDataActions.UPDATE_STATE_MAP,
+    payload: { stateMap: newStateMap },
+  });
+  yield put({ type: mapSettingActons.CHANGE_MAP, payload: { mapInfo, chart } });
+  const { stateKey } = yield select(getData);
+  yield put({
+    type: csvDataActions.SET_STATE_AND_GROUP_SAGA,
+    payload: { stateKey },
+  });
 }
 
+
+function * loadFromURLSetings(action) {
+  let mapInfo = getQueryVariable('map');
+  const queryURL = getQueryVariable('url');
+  if (mapInfo) {
+    mapInfo = mapInfo.flatMap(i => i )
+    yield put({
+      type: mapSettingActons.LOAD_NEW_MAP_SAGA,
+      payload: { mapInfo },
+    });
+  }
+
+
+  if(queryURL) {
+    yield put({
+      type: csvDataActions.LOAD_DATA_SAGA,
+      payload: { url:queryURL },
+    });
+  }
+
+
+}
 
 function* mySaga() {
   yield all([
     takeLatest(csvDataActions.LOAD_DATA_SAGA, fetchData),
+    takeLatest(csvDataActions.LOAD_FROM_URL, loadFromURLSetings),
     takeEvery(csvDataActions.SET_DISPLAY_SAGA, setDisplay),
     takeEvery(csvDataActions.APPLY_FILTERS_SAGA, updateFilters),
     takeEvery(csvDataActions.SET_STATE_AND_GROUP_SAGA, groupDataSaga),
