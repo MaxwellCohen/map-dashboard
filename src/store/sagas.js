@@ -8,7 +8,8 @@ import {
   takeEvery,
 } from 'redux-saga/effects';
 import * as csvDataActions from './csvData/csvData.actions';
-import * as mapSettingActons from './mapSettings/mapSettings.actions';
+import * as mapSettingActions from './mapSettings/mapSettings.actions';
+import * as mapOptionsActions from './mapOptions/mapOptions.actions';
 import {
   groupData as gd,
   normalizeState,
@@ -83,15 +84,26 @@ function* fetchData(action) {
     if (!url) {
       yield put({ type: csvDataActions.LOAD_DATA_SUCCESS, payload: {} });
     }
-    let stateMap;
-    const { data: apiData } = yield call(getCSV, url);
-    const [titles, rawData] = yield call(convertCSVToJSON, apiData);
     let [
       displayField,
       aggregationAction,
       filteringFuncitons,
       stateKey,
     ] = yield updateUrlLoadData(url);
+
+    let stateMap;
+    const response = yield call(getCSV, url);
+    console.log(response);
+    const apiData = response.data;
+    let titles, rawData;
+
+    if (Array.isArray(apiData)) {
+      rawData = apiData;
+      titles = Object.keys(rawData[0]);
+    } else {
+      [titles, rawData] = yield call(convertCSVToJSON, apiData);
+    }
+
     [stateKey, stateMap] = yield getfigureOutStateInfo(
       rawData,
       titles,
@@ -206,12 +218,21 @@ function* setDisplay(action) {
       },
     });
 
-    const groupData = yield call(
-      processToDisplay,
-      displayField,
-      aggregationAction,
-      state.groupData,
-    );
+    let groupData;
+    if (state.groupData.length > 0) {
+      groupData = yield call(
+        processToDisplay,
+        displayField,
+        aggregationAction,
+        state.groupData,
+      );
+    } else {
+      groupData = yield groupAndDisplayData(
+        state.filteredData,
+        displayField,
+        aggregationAction,
+      );
+    }
 
     yield put({
       type: csvDataActions.SET_DISPLAY,
@@ -236,7 +257,7 @@ function loadMapScript(mapNameJSFile) {
 function* loadNewMap(action) {
   const mapInfo = action.payload.mapInfo;
   if (!mapInfo) {
-    yield put({ type: mapSettingActons.CHANGE_MAP, payload: { mapInfo } });
+    yield put({ type: mapSettingActions.CHANGE_MAP, payload: { mapInfo } });
     return;
   }
   updateQuery('map', mapInfo);
@@ -254,7 +275,10 @@ function* loadNewMap(action) {
     type: csvDataActions.UPDATE_STATE_MAP,
     payload: { stateMap: newStateMap },
   });
-  yield put({ type: mapSettingActons.CHANGE_MAP, payload: { mapInfo, chart } });
+  yield put({
+    type: mapSettingActions.CHANGE_MAP,
+    payload: { mapInfo, chart },
+  });
   const { stateKey } = yield select(getData);
   yield put({
     type: csvDataActions.SET_STATE_AND_GROUP_SAGA,
@@ -262,27 +286,48 @@ function* loadNewMap(action) {
   });
 }
 
-
-function * loadFromURLSetings(action) {
+function* loadFromURLSetings(action) {
+  console.log(getQueryVariable());
   let mapInfo = getQueryVariable('map');
   const queryURL = getQueryVariable('url');
+  const min = getQueryVariable('mi');
+  const max = getQueryVariable('ma');
+  console.log(max);
+  const title = getQueryVariable('t');
+  const s = getQueryVariable('st');
   if (mapInfo) {
-    mapInfo = mapInfo.flatMap(i => i )
+    yield put({ type: csvDataActions.REQUEST_DATA });
+    mapInfo = mapInfo.flatMap((i) => i);
+    const lastItem = mapInfo.pop();
+    mapInfo = [mapInfo.join(','), lastItem];
     yield put({
-      type: mapSettingActons.LOAD_NEW_MAP_SAGA,
+      type: mapSettingActions.LOAD_NEW_MAP_SAGA,
       payload: { mapInfo },
     });
   }
 
-
-  if(queryURL) {
+  if (queryURL) {
     yield put({
       type: csvDataActions.LOAD_DATA_SAGA,
-      payload: { url:queryURL },
+      payload: { url: queryURL },
     });
+
+    if (min) {
+      yield put(mapOptionsActions.setColorAxisMin(min));
+    }
+    if (max) {
+      console.log('update Max', max)
+      yield put(mapOptionsActions.setColorAxisMax(max));
+    }
+
+    if (title) {
+      yield put(mapOptionsActions.setTitle(title));
+    }
+    if (s) {
+      console.log(s);
+      yield put(mapOptionsActions.setColorAxisStops(s));
+    }
   }
-
-
 }
 
 function* mySaga() {
@@ -292,7 +337,7 @@ function* mySaga() {
     takeEvery(csvDataActions.SET_DISPLAY_SAGA, setDisplay),
     takeEvery(csvDataActions.APPLY_FILTERS_SAGA, updateFilters),
     takeEvery(csvDataActions.SET_STATE_AND_GROUP_SAGA, groupDataSaga),
-    takeEvery(mapSettingActons.LOAD_NEW_MAP_SAGA, loadNewMap),
+    takeEvery(mapSettingActions.LOAD_NEW_MAP_SAGA, loadNewMap),
   ]);
 }
 

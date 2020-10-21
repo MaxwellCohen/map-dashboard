@@ -33,7 +33,12 @@ const displayfilterOptions = (
     case 'greater':
     case 'less':
       return (
-        <div style={{ margin: '0px 8px 0 15px ', flex: 1, alignContent: 'flex-end' }}>
+        <div
+          style={{
+            margin: '0px 8px 0 15px ',
+            flex: 1,
+            alignContent: 'flex-end',
+          }}>
           <SingleValueFilter
             filterValues={filterValues}
             onFilterValueChange={onFilterValueChange}
@@ -57,7 +62,6 @@ const displayfilterOptions = (
 };
 
 const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
-
   const { titles } = useSelector(({ data }) => data);
   const [filterType, setFilterType] = useState('');
   const [dataField, setDataField] = useState('');
@@ -76,19 +80,19 @@ const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
 
   const filterTypeChangeHandler = (v) => {
     setFilterType(v);
-    if(v !== filterSettings[0]) {
+    if (v !== filterSettings[0]) {
       const newFilter = [...filterSettings];
       newFilter[0] = v;
-      onFilterChange(newFilter)
+      onFilterChange(newFilter);
     }
   };
 
   const dataFieldChangeHandler = (v) => {
     setDataField(v);
-    if(v !== filterSettings[1]) {
+    if (v !== filterSettings[1]) {
       const newFilter = [...filterSettings];
       newFilter[1] = v;
-      onFilterChange(newFilter)
+      onFilterChange(newFilter);
     }
   };
 
@@ -112,7 +116,8 @@ const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
         style={{
           display: 'flex',
           flexDirection: 'row',
-          flex: 1,
+          flex: 3,
+          flexGrow: 3,
           marginRight: 8,
         }}>
         <DropDown
@@ -135,8 +140,8 @@ const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
           flex: 2,
           flexGrow: 2,
           alignItems: 'flex-end',
-          justifyContent:'flex-end',
-          marginBottom: '8px'
+          justifyContent: 'flex-end',
+          marginBottom: '8px',
         }}>
         {displayfilterOptions(
           dataField,
@@ -153,7 +158,7 @@ const FilterItem = ({ filterSettings, onFilterChange, onDelete }) => {
           justifyContent: 'flex-end',
         }}>
         <Button onClick={() => onDelete()} style={{ marginBottom: '-8px' }}>
-          <DeleteOutlineRoundedIcon style={{ padding: 0 }} />
+          <DeleteOutlineRoundedIcon  />
         </Button>
       </div>
     </div>

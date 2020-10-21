@@ -27,6 +27,13 @@ export default class Calculations {
     return this.cache.numberData;
   }
 
+  get value() {
+    if (this.arr.length === 1 && !isNaN(parseFloat(this.arr[0][this.key]))) {
+      return parseFloat(this.arr[0][this.key])
+    }
+    return this.average;
+  }
+
   get average() {
     if (!this.count) {
       return 0;
@@ -71,6 +78,10 @@ export default class Calculations {
   }
 
   _display() {
+    if (this.arr.length === 1) {
+      return `<br>${this.value.toFixed(2)}`
+    }
+
     return `
     <br>Average: ${this.average.toFixed(2)}
     <br>Count: ${this.count} 

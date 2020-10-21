@@ -44,11 +44,6 @@ export const setColorAxisStops = (stops) => {
 };
 
 export const setMapData = (data = [], name = null) => {
-  const valArray = (data|| []).map((v) => v[1]);
-  const min =  Math.min(...valArray);
-  const max = Math.max(...valArray);
-  updateQuery('ma', max)
-  updateQuery('mi', min)
   return {
     type: SET_MAP_DATA,
     payload: {
@@ -57,8 +52,8 @@ export const setMapData = (data = [], name = null) => {
         name,
       },
       colorAxis: {
-        min,
-        max
+        // min,
+        // max
       },
     },
   };

@@ -1,20 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import BasicTextField from '../common/BasicTextFields';
 import { AgGridReact, AgGridColumn } from 'ag-grid-react';
 import NumericEditor from '../cellEditors/NumericEditor';
 import ColorEditor from '../cellEditors/ColorEditor';
-import * as Actions from '../../store/mapOptions/mapOptions.actions';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { getQueryVariable } from '../../utils/queryUtils';
-import useChartSettings, { stopObjToArr } from './useChartSettings';
-import MapSelector from '../mapSelector';
+import useChartSettings from './useChartSettings';
 
 const ChartSettings = () => {
   // const [gridApi, setGridApi] = useState(null);
   // const [gridColumnApi, setGridColumnApi] = useState(null);
-  const dispatch = useDispatch();
-  const loadedURL = useSelector(({ data }) => data?.url);
   const chartTitle = useSelector(({ options }) => options.title.text);
   const min = useSelector(({ options }) => options.colorAxis.min);
   const max = useSelector(({ options }) => options.colorAxis.max);
@@ -35,31 +30,7 @@ const ChartSettings = () => {
     setMaxHandle,
   ] = useChartSettings();
 
-  useEffect(() => {
-    const mi = getQueryVariable('mi');
-    if (mi && mi !== min && loadedURL) {
-      dispatch(Actions.setColorAxisMin(mi));
-    }
-  }, [min, loadedURL, dispatch]);
-  useEffect(() => {
-    const ma = getQueryVariable('ma');
-    if (ma && ma !== max && loadedURL) {
-      dispatch(Actions.setColorAxisMax(ma));
-    }
-  }, [max, loadedURL, dispatch]);
-  useEffect(() => {
-    const t = getQueryVariable('t');
-    if (t && t !== chartTitle && loadedURL) {
-      dispatch(Actions.setTitle(t));
-    }
-  }, [chartTitle, loadedURL, dispatch]);
-  useEffect(() => {
-    const s = getQueryVariable('st');
-    const st = stopData.map(stopObjToArr);
-    if (s && s.toString() !== st.toString() && loadedURL) {
-      dispatch(Actions.setColorAxisStops(s));
-    }
-  }, [stopData, loadedURL, dispatch]);
+
 
   function onGridReady(params) {
     // setGridApi(params.api);
@@ -72,9 +43,6 @@ const ChartSettings = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
-        <MapSelector />
-      </div>
       <BasicTextField
         label='title'
         value={chartTitle}

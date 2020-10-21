@@ -10,26 +10,30 @@ if (typeof window !== 'undefined') {
 const Highcharts = window.Highcharts;
 
 const Chart = () => {
-  const { groupData, displayField } = useSelector(({ data }) => data);
+  const { groupData, displayField, processing, loading } = useSelector(({ data }) => data);
   const options  = useSelector(({ options }) => options);
   const dispatch = useDispatch();
-
   useEffect(() => {
     if (groupData.length !== 0) {
+
       dispatch(Actions.setMapData(groupData, displayField));
     } else {
       dispatch(Actions.setMapData());
     }
   }, [groupData, displayField, dispatch]);
-
   return (
-    <>
+    <div>
+      {( loading) ? <div >downloading data</div> : null}
+      {(processing) ? <div >processing data</div> : null}
+      <div style={{ display: (processing || loading) ? "none" : "block" }}>
         <HighchartsReact
+          immutable={true}
           highcharts={Highcharts}
           options={options}
           constructorType={'mapChart'}
         />
-    </>
+        </div>
+    </div>
   );
 };
 

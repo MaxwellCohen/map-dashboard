@@ -18,15 +18,16 @@ const MapSelector = () => {
   const updateMap = (v) => {
     dispatch(loadNewMap(v));
   }
-  const diplayfn = (option) => startCase(option[0])
+  const displayfn = (option) => startCase(option[0])
+  const matchfn = (option) => startCase(option[1])
 
   return <DropDown 
     value={mapInfo}
     values={listOfMaps}
-    label='Map Type'
+    label='Map'
     onChange={updateMap}
-    getOptionLabel={diplayfn}
-    getOptionSelected={diplayfn}
+    getOptionLabel={displayfn}
+    getOptionSelected={matchfn}
   />
 };
 

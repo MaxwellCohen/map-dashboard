@@ -4,7 +4,7 @@ import axios from 'axios';
 export const getCSV = (url) => {
   const validURL = isValidHttpUrl(url);
   if (!validURL) {
-    return Promise.reject('invalid url');
+    return Promise.reject('invalid url' + url );
   }
   return axios.get(
      `https://map-dashboard-cors.herokuapp.com/${url}`,

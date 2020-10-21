@@ -14,7 +14,7 @@ const App = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{textAlign: 'center'}}> 
-      <h1>US State Data Mapping Tool</h1>
+      <h1>Data Mapping Tool</h1>
       </div>
       <div
         style={{
